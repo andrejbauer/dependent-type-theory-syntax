@@ -1,0 +1,3 @@
+name: dependent-type-theory-syntax -- raw syntax of dependent type theories
+depend: standard-library
+include: src
