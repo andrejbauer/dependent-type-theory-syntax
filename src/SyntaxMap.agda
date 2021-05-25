@@ -52,7 +52,7 @@ module SyntaxMap where
   [_]ᵐ_ {𝕋 = 𝕋} f {𝕄 = 𝕄} (expr-symb S es) =
     let open Instantiation 𝕋 in
     let open Renaming 𝕋 in
-        [ (λ M →  [ f ]ᵐ es M) ]ⁱ ([ 𝟘-initial ]ʳ f S)
+        [ (λ M → [ f ]ᵐ es M) ]ⁱ ([ 𝟘-initial ]ʳ f S)
   [ f ]ᵐ (expr-meta M ts) = expr-meta M (λ i → [ f ]ᵐ (ts i))
   [ f ]ᵐ expr-eqty = expr-eqty
   [ f ]ᵐ expr-eqtm = expr-eqtm
@@ -68,11 +68,20 @@ module SyntaxMap where
   module _ {𝕊} where
     open Equality 𝕊
     open Renaming 𝕊
+    open Substitution 𝕊
     open Instantiation 𝕊
 
     [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ 𝟙ᵐ ]ᵐ t ≈ t
     [𝟙]ᵐ (expr-var x) = ≈-refl
-    [𝟙]ᵐ (expr-symb S es) = ≈-symb (λ i → {!!})
+    [𝟙]ᵐ (expr-symb S es) =
+      ≈-symb (λ {cⁱ γⁱ} i → [𝟙]ᵐ-arg cⁱ γⁱ i)
+        where [𝟙]ᵐ-arg : ∀ cⁱ γⁱ (i : [ cⁱ , γⁱ ]∈ symb-arg 𝕊 S) → _
+              [𝟙]ᵐ-arg (obj x) γⁱ i =
+                ≈-trans
+                  ([]ˢ-resp-≈ _ ([]ʳ-resp-≈ _ ([𝟙]ᵐ (es i))))
+                  (≈-trans (≈-sym ([ˢ∘ʳ]ˢ (es i))) ([]ˢ-id (λ { (var-left _) → ≈-refl ; (var-right _) → ≈-refl })))
+              [𝟙]ᵐ-arg EqTy γⁱ i = ≈-eqty
+              [𝟙]ᵐ-arg EqTm γⁱ i = ≈-eqtm
     [𝟙]ᵐ (expr-meta M ts) = ≈-meta λ i → [𝟙]ᵐ (ts i)
     [𝟙]ᵐ expr-eqty = ≈-eqty
     [𝟙]ᵐ expr-eqtm = ≈-eqtm
@@ -100,7 +109,7 @@ module SyntaxMap where
 
    open Categories.Category
 
-   SyntaxMaps : Category (suc zero) {!!} {!!}
+   SyntaxMaps : Category (suc zero) zero zero
    SyntaxMaps =
      record
        { Obj = SymbolSignature
@@ -110,9 +119,9 @@ module SyntaxMap where
        ; _∘_ = _∘ᵐ_
        ; assoc = λ {_} {_} {_} {_} {f} {_} {_} {_} S → [∘]ᵐ (f S)
        ; sym-assoc = λ {_} {_} {_} {𝕍} {f} {_} {_} {_} S → Equality.≈-sym 𝕍 ([∘]ᵐ (f S))
-       ; identityˡ = λ S → {!!}
-       ; identityʳ = {!!}
-       ; identity² = {!!}
+       ; identityˡ = λ S → [𝟙]ᵐ _
+       ; identityʳ = λ S → {!!}
+       ; identity² = λ S → [𝟙]ᵐ _
        ; equiv = record { refl = ≈ᵐ-refl ; sym = ≈ᵐ-sym ; trans = ≈ᵐ-trans }
        ; ∘-resp-≈ = {!!}
        }
