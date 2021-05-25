@@ -30,25 +30,25 @@ module Syntax where
 
   -- Metavariable context shapes
 
-  infixl 9 _⊕ᵐ_
+  infixl 9 _⊕ᵐᵛ_
 
   data MShape : Set where
-    𝟘ᵐ : MShape
-    𝟙ᵐ : ∀ (cl : Class) (γ : VShape) → MShape
-    _⊕ᵐ_ : MShape → MShape → MShape
+    𝟘ᵐᵛ : MShape
+    𝟙ᵐᵛ : ∀ (cl : Class) (γ : VShape) → MShape
+    _⊕ᵐᵛ_ : MShape → MShape → MShape
 
   infix 8 [_,_]∈_
 
   data [_,_]∈_ : Class → VShape → MShape → Set where
-    mv-here : ∀ cl γ → [ cl , γ ]∈ 𝟙ᵐ cl γ
-    mv-left : ∀ {𝕂 𝕄} cl γ → [ cl , γ ]∈ 𝕂 → [ cl , γ ]∈ 𝕂 ⊕ᵐ 𝕄
-    mv-right : ∀ {𝕂 𝕄} cl γ → [ cl , γ ]∈ 𝕄 → [ cl , γ ]∈ 𝕂 ⊕ᵐ 𝕄
+    mv-here : ∀ cl γ → [ cl , γ ]∈ 𝟙ᵐᵛ cl γ
+    mv-left : ∀ {𝕂 𝕄} cl γ → [ cl , γ ]∈ 𝕂 → [ cl , γ ]∈ 𝕂 ⊕ᵐᵛ 𝕄
+    mv-right : ∀ {𝕂 𝕄} cl γ → [ cl , γ ]∈ 𝕄 → [ cl , γ ]∈ 𝕂 ⊕ᵐᵛ 𝕄
 
   -- Symbol signature
   record SymbolSignature : Set₁ where
     field
-      sym : ObjectClass → Set -- a set of symbol names, one for each class
-      sym-arg : ∀ {cl} → sym cl → MShape
+      symb : ObjectClass → Set -- a set of symbol names, one for each class
+      symb-arg : ∀ {cl} → symb cl → MShape
 
   -- Expressions
   module Expression (𝕊 : SymbolSignature) where
@@ -66,8 +66,8 @@ module Syntax where
 
     data Expr where
       expr-var : ∀ {𝕄} {γ} (x : var γ) → ExprTm 𝕄 γ
-      expr-symb : ∀ {cl 𝕄 γ} (S : sym cl) →
-                    (es : ∀ {clⁱ γⁱ} (i : [ clⁱ , γⁱ ]∈ sym-arg S) → Arg clⁱ 𝕄 γ γⁱ) →
+      expr-symb : ∀ {cl 𝕄 γ} (S : symb cl) →
+                    (es : ∀ {clⁱ γⁱ} (i : [ clⁱ , γⁱ ]∈ symb-arg S) → Arg clⁱ 𝕄 γ γⁱ) →
                     ExprObj cl 𝕄 γ
       expr-meta : ∀ {cl 𝕄 γ} {γᴹ} (M : [ obj cl , γᴹ ]∈ 𝕄) → (ts : ∀ (i : var γᴹ) → ExprTm 𝕄 γ) → ExprObj cl 𝕄 γ
       expr-eqty : ∀ {γ} {𝕄} → Expr EqTy 𝕄 γ
@@ -87,9 +87,9 @@ module Syntax where
 
     data _≈_ : ∀ {cl 𝕄 γ} → Expr cl 𝕄 γ → Expr cl 𝕄 γ → Set where
       ≈-≡ : ∀ {cl 𝕄 γ} {t u : Expr cl 𝕄 γ} (ξ : t ≡ u) → t ≈ u
-      ≈-symb : ∀ {cl 𝕄 γ} {S : sym cl} →
-                {ds es : ∀ {cⁱ γⁱ} (i : [ cⁱ , γⁱ ]∈ sym-arg S) → Arg cⁱ 𝕄 γ γⁱ}
-                (ξ : ∀ {cⁱ γⁱ} (i : [ cⁱ , γⁱ ]∈ sym-arg S) → ds i ≈ es i) → expr-symb S ds ≈ expr-symb S es
+      ≈-symb : ∀ {cl 𝕄 γ} {S : symb cl} →
+                {ds es : ∀ {cⁱ γⁱ} (i : [ cⁱ , γⁱ ]∈ symb-arg S) → Arg cⁱ 𝕄 γ γⁱ}
+                (ξ : ∀ {cⁱ γⁱ} (i : [ cⁱ , γⁱ ]∈ symb-arg S) → ds i ≈ es i) → expr-symb S ds ≈ expr-symb S es
       ≈-meta : ∀ {cl 𝕄 γ} {γᴹ} {M : [ obj cl , γᴹ ]∈ 𝕄} → {ts us : ∀ (i : var γᴹ) → ExprTm 𝕄 γ}
                 (ξ : ∀ i → ts i ≈ us i) → expr-meta M ts ≈ expr-meta M us
 

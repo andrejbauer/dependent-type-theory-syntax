@@ -142,6 +142,9 @@ module Renaming (𝕊 : SymbolSignature) where
 
   -- 𝟘 is neutral in various ways
 
+  𝟘-initial : ∀ {γ} → 𝟘 →ʳ γ
+  𝟘-initial ()
+
   𝟘-neutral-lr : ∀ {γ} → γ ⊕ 𝟘 →ʳ γ
   𝟘-neutral-lr (var-left x) = x
 
