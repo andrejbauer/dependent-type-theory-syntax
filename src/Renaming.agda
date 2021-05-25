@@ -1,4 +1,7 @@
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; subst; cong)
+open import Level
+open import Relation.Binary.PropositionalEquality
+
+import Categories.Category
 
 open import Syntax
 
@@ -144,3 +147,25 @@ module Renaming (𝕊 : SymbolSignature) where
 
   𝟘-neutral-rl : ∀ {γ} → γ →ʳ 𝟘 ⊕ γ
   𝟘-neutral-rl x = var-right x
+
+  -- the categorical structure
+
+  module _ where
+    open Categories.Category
+
+    Renamings : Category zero zero zero
+    Renamings =
+      record
+        { Obj = VShape
+        ; _⇒_ = _→ʳ_
+        ; _≈_ = _≡ʳ_
+        ; id = 𝟙ʳ
+        ; _∘_ = _∘ʳ_
+        ; assoc = λ _ → refl
+        ; sym-assoc = λ _ → refl
+        ; identityˡ = λ _ → refl
+        ; identityʳ = λ _ → refl
+        ; identity² = λ _ → refl
+        ; equiv = record { refl = ≡ʳ-refl ; sym = ≡ʳ-sym ; trans = ≡ʳ-trans }
+        ; ∘-resp-≈ = λ {_} {_} {_} {ρ} {_} {_} {τ} ζ ξ x → trans (cong ρ (ξ x)) (ζ (τ x))
+        }
