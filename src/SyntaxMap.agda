@@ -3,9 +3,9 @@ import Categories.Category
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; subst; cong)
 
 open import Syntax
-import Renaming
-import Substitution
-import Instantiation
+open import Renaming
+open import Substitution
+open import Instantiation
 
 module SyntaxMap where
 
@@ -50,9 +50,7 @@ module SyntaxMap where
   [_]ᵐ_ : ∀ {𝕊 𝕋} → (𝕊 →ᵐ 𝕋) → ∀ {cl 𝕄 γ} → Expr 𝕊 𝕄 cl γ → Expr 𝕋 𝕄 cl γ
   [ f ]ᵐ (expr-var x) = expr-var x
   [_]ᵐ_ {𝕋 = 𝕋} f {𝕄 = 𝕄} (expr-symb S es) =
-    let open Instantiation 𝕋 in
-    let open Renaming 𝕋 in
-        [ (λ M → [ f ]ᵐ es M) ]ⁱ ([ 𝟘-initial ]ʳ f S)
+        𝕋 %[ (λ M → [ f ]ᵐ es M) ]ⁱ (𝕋 %[ Core.𝟘-initial 𝕋 ]ʳ f S)
   [ f ]ᵐ (expr-meta M ts) = expr-meta M (λ i → [ f ]ᵐ (ts i))
   [ f ]ᵐ expr-eqty = expr-eqty
   [ f ]ᵐ expr-eqtm = expr-eqtm
@@ -67,9 +65,9 @@ module SyntaxMap where
   -- Action preserves identity
   module _ {𝕊} where
     open Equality 𝕊
-    open Renaming 𝕊
-    open Substitution 𝕊
-    open Instantiation 𝕊
+    open Renaming.Core 𝕊
+    open Substitution.Core 𝕊
+    open Instantiation.Core 𝕊
 
     [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ 𝟙ᵐ ]ᵐ t ≈ t
     [𝟙]ᵐ (expr-var x) = ≈-refl
@@ -120,7 +118,7 @@ module SyntaxMap where
        ; assoc = λ {_} {_} {_} {_} {f} {_} {_} {_} S → [∘]ᵐ (f S)
        ; sym-assoc = λ {_} {_} {_} {𝕍} {f} {_} {_} {_} S → Equality.≈-sym 𝕍 ([∘]ᵐ (f S))
        ; identityˡ = λ S → [𝟙]ᵐ _
-       ; identityʳ = λ S → {!!}
+       ; identityʳ = λ {𝕊} {𝕋} {f} {cl} S → {!!}
        ; identity² = λ S → [𝟙]ᵐ _
        ; equiv = record { refl = ≈ᵐ-refl ; sym = ≈ᵐ-sym ; trans = ≈ᵐ-trans }
        ; ∘-resp-≈ = {!!}
