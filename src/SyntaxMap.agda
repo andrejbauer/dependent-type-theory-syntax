@@ -11,6 +11,7 @@ module SyntaxMap where
 
   open SymbolSignature
   open Expression
+  open Equality
 
   infix 5 _→ᵐ_
 
@@ -25,7 +26,7 @@ module SyntaxMap where
 
   _≈ᵐ_ : ∀ {𝕊 𝕋} (f g : 𝕊 →ᵐ 𝕋) → Set
   _≈ᵐ_ {𝕊 = 𝕊} {𝕋 = 𝕋} f g =
-    ∀ {cl} (S : symb 𝕊 cl) → Equality._≈_ 𝕋 (f S) (g S)
+    ∀ {cl} (S : symb 𝕊 cl) → 𝕋 % f S ≈ g S
 
   -- equality is an equivalence relation
 
@@ -64,19 +65,19 @@ module SyntaxMap where
 
   -- Action preserves identity
   module _ {𝕊} where
-    open Equality 𝕊
+    open Equality
     open Renaming.Core 𝕊
     open Substitution.Core 𝕊
     open Instantiation.Core 𝕊
 
-    [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ 𝟙ᵐ ]ᵐ t ≈ t
-    [𝟙]ᵐ (expr-var x) = ≈-refl
+    [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → 𝕊 % [ 𝟙ᵐ ]ᵐ t ≈ t
+    [𝟙]ᵐ (expr-var x) = Equality.≈-refl 𝕊
     [𝟙]ᵐ (expr-symb S es) =
       ≈-symb (λ {cⁱ γⁱ} i → [𝟙]ᵐ-arg cⁱ γⁱ i)
         where [𝟙]ᵐ-arg : ∀ cⁱ γⁱ (i : [ cⁱ , γⁱ ]∈ symb-arg 𝕊 S) → _
               [𝟙]ᵐ-arg (obj x) γⁱ i =
                 ≈-trans
-                  ([]ˢ-resp-≈ _ ([]ʳ-resp-≈ _ ([𝟙]ᵐ (es i))))
+                  ([]ˢ-resp-≈ _ _ ([]ʳ-resp-≈ _ ([𝟙]ᵐ (es i))))
                   (≈-trans (≈-sym ([ˢ∘ʳ]ˢ (es i))) ([]ˢ-id (λ { (var-left _) → ≈-refl ; (var-right _) → ≈-refl })))
               [𝟙]ᵐ-arg EqTy γⁱ i = ≈-eqty
               [𝟙]ᵐ-arg EqTm γⁱ i = ≈-eqtm
@@ -86,14 +87,14 @@ module SyntaxMap where
 
   -- Action preserves composition
   module _ {𝕊 𝕋 𝕌} where
-    open Equality 𝕌
+    open Equality
 
-    [∘]ᵐ : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 𝕄 cl γ) → [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
-    [∘]ᵐ (expr-var x) = ≈-refl
+    [∘]ᵐ : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 𝕄 cl γ) → 𝕌 % [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
+    [∘]ᵐ (expr-var x) = Equality.≈-refl 𝕌
     [∘]ᵐ (expr-symb S es) = {!!}
     [∘]ᵐ (expr-meta M ts) = ≈-meta (λ i → [∘]ᵐ (ts i))
-    [∘]ᵐ expr-eqty = ≈-eqty
-    [∘]ᵐ expr-eqtm = ≈-eqtm
+    [∘]ᵐ expr-eqty = Equality.≈-eqty 𝕌
+    [∘]ᵐ expr-eqtm = Equality.≈-eqtm 𝕌
 
   -- Associativity of composition
 
