@@ -7,88 +7,111 @@ open import Syntax
 
 module Renaming where
 
-  module Core {𝕊 : SymbolSignature} where
-    open Equality
+  open Equality
 
-    -- the set of renamings
+  -- the set of renamings
 
-    infix 5 _→ʳ_
+  infix 5 _→ʳ_
 
-    _→ʳ_ : VShape → VShape → Set
-    γ →ʳ δ = var γ → var δ
+  _→ʳ_ : VShape → VShape → Set
+  γ →ʳ δ = var γ → var δ
 
-    -- equality of renamings
+  -- equality of renamings
 
-    infix 5 _≡ʳ_
+  infix 5 _≡ʳ_
 
-    _≡ʳ_ : ∀ {γ δ} → (ρ : γ →ʳ δ) → (t : γ →ʳ δ) → Set
-    ρ ≡ʳ σ = ∀ x → ρ x ≡ σ x
+  _≡ʳ_ : ∀ {γ δ} → (ρ : γ →ʳ δ) → (t : γ →ʳ δ) → Set
+  ρ ≡ʳ σ = ∀ x → ρ x ≡ σ x
 
-    -- equality is an equivalence relation
+  -- equality is an equivalence relation
 
-    ≡ʳ-refl : ∀ {γ δ} → {ρ : γ →ʳ δ} → ρ ≡ʳ ρ
-    ≡ʳ-refl x = refl
+  ≡ʳ-refl : ∀ {γ δ} → {ρ : γ →ʳ δ} → ρ ≡ʳ ρ
+  ≡ʳ-refl x = refl
 
-    ≡ʳ-sym : ∀ {γ δ} → {ρ τ : γ →ʳ δ} → ρ ≡ʳ τ → τ ≡ʳ ρ
-    ≡ʳ-sym ξ x = sym (ξ x)
+  ≡ʳ-sym : ∀ {γ δ} → {ρ τ : γ →ʳ δ} → ρ ≡ʳ τ → τ ≡ʳ ρ
+  ≡ʳ-sym ξ x = sym (ξ x)
 
-    ≡ʳ-trans : ∀ {γ δ} → {ρ τ χ : γ →ʳ δ} → ρ ≡ʳ τ → τ ≡ʳ χ → ρ ≡ʳ χ
-    ≡ʳ-trans ζ ξ x = trans (ζ x) (ξ x)
+  ≡ʳ-trans : ∀ {γ δ} → {ρ τ χ : γ →ʳ δ} → ρ ≡ʳ τ → τ ≡ʳ χ → ρ ≡ʳ χ
+  ≡ʳ-trans ζ ξ x = trans (ζ x) (ξ x)
 
-    -- identity renaming
+  -- re-associatiate the shape
 
-    𝟙ʳ : ∀ {γ} → γ →ʳ γ
-    𝟙ʳ x = x
+  assocˡ : ∀ {γ δ η} → (γ ⊕ δ) ⊕ η →ʳ γ ⊕ (δ ⊕ η)
+  assocˡ (var-left (var-left x)) = var-left x
+  assocˡ (var-left (var-right y)) = var-right (var-left y)
+  assocˡ (var-right z) = var-right (var-right z)
 
-    -- composition of renamings
+  assocʳ : ∀ {γ δ η} → γ ⊕ (δ ⊕ η) →ʳ (γ ⊕ δ) ⊕ η
+  assocʳ (var-left x) = var-left (var-left x)
+  assocʳ (var-right (var-left y)) = var-left (var-right y)
+  assocʳ (var-right (var-right z)) = var-right z
 
-    infixl 7 _∘ʳ_
+  -- 𝟘 is neutral in various ways
 
-    _∘ʳ_ : ∀ {γ δ η} → (δ →ʳ η) → (γ →ʳ δ) → (γ →ʳ η)
-    (ρ ∘ʳ τ) x =  ρ (τ x)
+  𝟘-initial : ∀ {γ} → 𝟘 →ʳ γ
+  𝟘-initial ()
 
-    -- join of renamings
-    infix 6 [_,_]ʳ
+  𝟘-neutral-lr : ∀ {γ} → γ ⊕ 𝟘 →ʳ γ
+  𝟘-neutral-lr (var-left x) = x
 
-    [_,_]ʳ : ∀ {γ δ η} → (γ →ʳ η) → (δ →ʳ η) → (γ ⊕ δ →ʳ η)
-    [ ρ , τ ]ʳ (var-left x) = ρ x
-    [ ρ , τ ]ʳ (var-right y) = τ y
+  𝟘-neutral-rl : ∀ {γ} → γ →ʳ 𝟘 ⊕ γ
+  𝟘-neutral-rl x = var-right x
 
-    infix 6 _+ʳ_
+  -- identity renaming
 
-    -- sum of renamings
+  𝟙ʳ : ∀ {γ} → γ →ʳ γ
+  𝟙ʳ x = x
 
-    _+ʳ_ : ∀ {γ δ η θ} → (γ →ʳ η) → (δ →ʳ θ) → (γ ⊕ δ →ʳ η ⊕ θ)
-    (ρ +ʳ τ) (var-left x) = var-left (ρ x)
-    (ρ +ʳ τ) (var-right y) = var-right (τ y)
+  -- composition of renamings
 
-    -- renaming extension
-    ⇑ʳ : ∀ {γ δ η} → (γ →ʳ δ) → (γ ⊕ η →ʳ δ ⊕ η)
-    ⇑ʳ ρ = ρ +ʳ 𝟙ʳ
+  infixl 7 _∘ʳ_
 
-    -- a sum of idenities is an identity
+  _∘ʳ_ : ∀ {γ δ η} → (δ →ʳ η) → (γ →ʳ δ) → (γ →ʳ η)
+  (ρ ∘ʳ τ) x =  ρ (τ x)
 
-    𝟙ʳ+𝟙ʳ : ∀ {γ δ} → 𝟙ʳ +ʳ 𝟙ʳ ≡ʳ 𝟙ʳ {γ = γ ⊕ δ}
-    𝟙ʳ+𝟙ʳ (var-left x) = refl
-    𝟙ʳ+𝟙ʳ (var-right x) = refl
+  -- join of renamings
+  infix 6 [_,_]ʳ
 
-    -- extension commutes with composition
+  [_,_]ʳ : ∀ {γ δ η} → (γ →ʳ η) → (δ →ʳ η) → (γ ⊕ δ →ʳ η)
+  [ ρ , τ ]ʳ (var-left x) = ρ x
+  [ ρ , τ ]ʳ (var-right y) = τ y
 
-    ⇑ʳ-∘ʳ : ∀ {β γ δ η} {ρ : β →ʳ γ} {τ : γ →ʳ δ} → ⇑ʳ {η = η} (τ ∘ʳ ρ) ≡ʳ ⇑ʳ τ ∘ʳ ⇑ʳ ρ
-    ⇑ʳ-∘ʳ (var-left x) = refl
-    ⇑ʳ-∘ʳ (var-right y) = refl
+  infix 6 _+ʳ_
 
-    -- sum preserves equality
+  -- sum of renamings
 
-    ≡ʳ-+ʳ : ∀ {γ δ η θ} {ρ₁ ρ₂ : γ →ʳ η} → {τ₁ τ₂ : δ →ʳ θ} →
-            ρ₁ ≡ʳ ρ₂ → τ₁ ≡ʳ τ₂ → ρ₁ +ʳ τ₁ ≡ʳ ρ₂ +ʳ τ₂
-    ≡ʳ-+ʳ ζ ξ (var-left x) = cong var-left (ζ x)
-    ≡ʳ-+ʳ ζ ξ (var-right x) = cong var-right (ξ x)
+  _+ʳ_ : ∀ {γ δ η θ} → (γ →ʳ η) → (δ →ʳ θ) → (γ ⊕ δ →ʳ η ⊕ θ)
+  (ρ +ʳ τ) (var-left x) = var-left (ρ x)
+  (ρ +ʳ τ) (var-right y) = var-right (τ y)
+
+  -- renaming extension
+  ⇑ʳ : ∀ {γ δ η} → (γ →ʳ δ) → (γ ⊕ η →ʳ δ ⊕ η)
+  ⇑ʳ ρ = ρ +ʳ 𝟙ʳ
+
+  -- a sum of idenities is an identity
+
+  𝟙ʳ+𝟙ʳ : ∀ {γ δ} → 𝟙ʳ +ʳ 𝟙ʳ ≡ʳ 𝟙ʳ {γ = γ ⊕ δ}
+  𝟙ʳ+𝟙ʳ (var-left x) = refl
+  𝟙ʳ+𝟙ʳ (var-right x) = refl
+
+  -- extension commutes with composition
+
+  ⇑ʳ-∘ʳ : ∀ {β γ δ η} {ρ : β →ʳ γ} {τ : γ →ʳ δ} → ⇑ʳ {η = η} (τ ∘ʳ ρ) ≡ʳ ⇑ʳ τ ∘ʳ ⇑ʳ ρ
+  ⇑ʳ-∘ʳ (var-left x) = refl
+  ⇑ʳ-∘ʳ (var-right y) = refl
+
+  -- sum preserves equality
+
+  ≡ʳ-+ʳ : ∀ {γ δ η θ} {ρ₁ ρ₂ : γ →ʳ η} → {τ₁ τ₂ : δ →ʳ θ} →
+          ρ₁ ≡ʳ ρ₂ → τ₁ ≡ʳ τ₂ → ρ₁ +ʳ τ₁ ≡ʳ ρ₂ +ʳ τ₂
+  ≡ʳ-+ʳ ζ ξ (var-left x) = cong var-left (ζ x)
+  ≡ʳ-+ʳ ζ ξ (var-right x) = cong var-right (ξ x)
+
+  module _ {𝕊 : SymbolSignature} where
+    open Expression 𝕊
 
     -- the action of a renaming on an expression
     infixr 6 [_]ʳ_
-
-    open Expression 𝕊
 
     [_]ʳ_ : ∀ {𝕄} {cl} {γ} {δ} (ρ : γ →ʳ δ) → Expr 𝕄 cl γ → Expr 𝕄 cl δ
     [ ρ ]ʳ (expr-var x) = expr-var (ρ x)
@@ -130,67 +153,28 @@ module Renaming where
     []ʳ-id : ∀ {cl 𝕄 γ} {ρ : γ →ʳ γ} {t : Expr cl 𝕄 γ} → ρ ≡ʳ 𝟙ʳ → [ ρ ]ʳ t ≈ t
     []ʳ-id ξ = ≈-trans ([]ʳ-resp-≡ʳ _ ξ) [𝟙]ʳ
 
-    -- re-associatiate the shape
+  -- the categorical structure
 
-    assocˡ : ∀ {γ δ η} → (γ ⊕ δ) ⊕ η →ʳ γ ⊕ (δ ⊕ η)
-    assocˡ (var-left (var-left x)) = var-left x
-    assocˡ (var-left (var-right y)) = var-right (var-left y)
-    assocˡ (var-right z) = var-right (var-right z)
+  module _ where
+    open Categories.Category
 
-    assocʳ : ∀ {γ δ η} → γ ⊕ (δ ⊕ η) →ʳ (γ ⊕ δ) ⊕ η
-    assocʳ (var-left x) = var-left (var-left x)
-    assocʳ (var-right (var-left y)) = var-left (var-right y)
-    assocʳ (var-right (var-right z)) = var-right z
-
-    -- 𝟘 is neutral in various ways
-
-    𝟘-initial : ∀ {γ} → 𝟘 →ʳ γ
-    𝟘-initial ()
-
-    𝟘-neutral-lr : ∀ {γ} → γ ⊕ 𝟘 →ʳ γ
-    𝟘-neutral-lr (var-left x) = x
-
-    𝟘-neutral-rl : ∀ {γ} → γ →ʳ 𝟘 ⊕ γ
-    𝟘-neutral-rl x = var-right x
-
-    -- the categorical structure
-
-    module _ where
-      open Categories.Category
-
-      Renamings : Category zero zero zero
-      Renamings =
-        record
-          { Obj = VShape
-          ; _⇒_ = _→ʳ_
-          ; _≈_ = _≡ʳ_
-          ; id = 𝟙ʳ
-          ; _∘_ = _∘ʳ_
-          ; assoc = λ _ → refl
-          ; sym-assoc = λ _ → refl
-          ; identityˡ = λ _ → refl
-          ; identityʳ = λ _ → refl
-          ; identity² = λ _ → refl
-          ; equiv = record { refl = ≡ʳ-refl ; sym = ≡ʳ-sym ; trans = ≡ʳ-trans }
-          ; ∘-resp-≈ = λ {_} {_} {_} {ρ} {_} {_} {τ} ζ ξ x → trans (cong ρ (ξ x)) (ζ (τ x))
-          }
-
-  open Core public
-
-  -- Notation for working with renamings & multiple signatures
-  infix 5 _%_→ʳ_
-
-  _%_→ʳ_ : ∀ (𝕊 : SymbolSignature) → VShape → VShape → Set
-  _%_→ʳ_ 𝕊 = _→ʳ_ {𝕊 = 𝕊}
-
-  infix 5 _%_≡ʳ_
-  _%_≡ʳ_ : ∀ (𝕊 : SymbolSignature) {γ δ} → (σ τ : _→ʳ_ {𝕊 = 𝕊} γ δ) → Set
-  _%_≡ʳ_ 𝕊 = _≡ʳ_ {𝕊 = 𝕊}
+    Renamings : Category zero zero zero
+    Renamings =
+      record
+        { Obj = VShape
+        ; _⇒_ = _→ʳ_
+        ; _≈_ = _≡ʳ_
+        ; id = 𝟙ʳ
+        ; _∘_ = _∘ʳ_
+        ; assoc = λ _ → refl
+        ; sym-assoc = λ _ → refl
+        ; identityˡ = λ _ → refl
+        ; identityʳ = λ _ → refl
+        ; identity² = λ _ → refl
+        ; equiv = record { refl = ≡ʳ-refl ; sym = ≡ʳ-sym ; trans = ≡ʳ-trans }
+        ; ∘-resp-≈ = λ {_} {_} {_} {ρ} {_} {_} {τ} ζ ξ x → trans (cong ρ (ξ x)) (ζ (τ x))
+        }
 
   infix 6 _%[_]ʳ_
-  _%[_]ʳ_ : ∀ (𝕊 : SymbolSignature) {cl 𝕄} {γ δ} → (σ : _→ʳ_ {𝕊 = 𝕊} γ δ) → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 _ _ δ
+  _%[_]ʳ_ : ∀ (𝕊 : SymbolSignature) {cl 𝕄} {γ δ} → (σ : γ →ʳ δ) → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 _ _ δ
   _%[_]ʳ_ 𝕊 = [_]ʳ_ {𝕊 = 𝕊}
-
-  infixl 7 _%⇑ʳ_
-  _%⇑ʳ_ : ∀ (𝕊 : SymbolSignature) {γ δ η} → 𝕊 % γ →ʳ δ → 𝕊 % γ ⊕ η →ʳ δ ⊕ η
-  _%⇑ʳ_ 𝕊 = ⇑ʳ {𝕊 = 𝕊}
