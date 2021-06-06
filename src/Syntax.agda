@@ -79,7 +79,7 @@ module Syntax where
     expr-meta-generic {cl = EqTm} M = expr-eqtm
 
   -- Syntactic equality
-  module Equality (𝕊 : SymbolSignature) where
+  module Equality {𝕊 : SymbolSignature} where
     open SymbolSignature 𝕊
     open Expression 𝕊
 
@@ -122,3 +122,8 @@ module Syntax where
         ; _≈_ = _≈_
         ; isEquivalence = record { refl = ≈-refl ; sym = ≈-sym ; trans = ≈-trans }
         }
+
+  infix 4 _%_≈_
+
+  _%_≈_ : ∀ (𝕊 : SymbolSignature) {cl 𝕄 γ} → (t u : Expression.Expr 𝕊 cl 𝕄 γ) → Set
+  _%_≈_ 𝕊 = Equality._≈_ {𝕊 = 𝕊}

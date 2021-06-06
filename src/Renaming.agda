@@ -7,8 +7,8 @@ open import Syntax
 
 module Renaming where
 
-  module Core (𝕊 : SymbolSignature) where
-    open Equality 𝕊
+  module Core {𝕊 : SymbolSignature} where
+    open Equality
 
     -- the set of renamings
 
@@ -175,12 +175,22 @@ module Renaming where
           ; ∘-resp-≈ = λ {_} {_} {_} {ρ} {_} {_} {τ} ζ ξ x → trans (cong ρ (ξ x)) (ζ (τ x))
           }
 
+  open Core public
+
   -- Notation for working with renamings & multiple signatures
   infix 5 _%_→ʳ_
-  _%_→ʳ_ = Core._→ʳ_
+
+  _%_→ʳ_ : ∀ (𝕊 : SymbolSignature) → VShape → VShape → Set
+  _%_→ʳ_ 𝕊 = _→ʳ_ {𝕊 = 𝕊}
 
   infix 5 _%_≡ʳ_
-  _%_≡ʳ_ = Core._≡ʳ_
+  _%_≡ʳ_ : ∀ (𝕊 : SymbolSignature) {γ δ} → (σ τ : _→ʳ_ {𝕊 = 𝕊} γ δ) → Set
+  _%_≡ʳ_ 𝕊 = _≡ʳ_ {𝕊 = 𝕊}
 
   infix 6 _%[_]ʳ_
-  _%[_]ʳ_ = Core.[_]ʳ_
+  _%[_]ʳ_ : ∀ (𝕊 : SymbolSignature) {cl 𝕄} {γ δ} → (σ : _→ʳ_ {𝕊 = 𝕊} γ δ) → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 _ _ δ
+  _%[_]ʳ_ 𝕊 = [_]ʳ_ {𝕊 = 𝕊}
+
+  infixl 7 _%⇑ʳ_
+  _%⇑ʳ_ : ∀ (𝕊 : SymbolSignature) {γ δ η} → 𝕊 % γ →ʳ δ → 𝕊 % γ ⊕ η →ʳ δ ⊕ η
+  _%⇑ʳ_ 𝕊 = ⇑ʳ {𝕊 = 𝕊}
