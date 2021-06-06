@@ -6,7 +6,7 @@ import Substitution
 
 module Instantiation where
   -- Instantiations
-  module Core (𝕊 : SymbolSignature) where
+  module Core {𝕊 : SymbolSignature} where
 
     open Expression 𝕊
     open Substitution
@@ -84,7 +84,7 @@ module Instantiation where
     (ρ ʳ∘ⁱ I) M =  [ 𝕊 %⇑ʳ ρ ]ʳ I M
 
     ⇑ⁱ-resp-ʳ∘ⁱ : ∀ {𝕂 𝕄} {γ δ η} {ρ : 𝕊 % γ →ʳ δ} → {I : 𝕂 →ⁱ 𝕄 ∥ γ} →
-                  ⇑ⁱ {δ = η} (ρ ʳ∘ⁱ I) ≈ⁱ 𝕊 %⇑ʳ ρ ʳ∘ⁱ ⇑ⁱ I
+                  ⇑ⁱ {δ = η} (ρ ʳ∘ⁱ I) ≈ⁱ (𝕊 %⇑ʳ ρ) ʳ∘ⁱ ⇑ⁱ I
     ⇑ⁱ-resp-ʳ∘ⁱ {I = I} M =
       ≈-trans
         (≈-trans
@@ -163,7 +163,7 @@ module Instantiation where
 
     -- interaction of instantiation, substitution and renaming
 
-    []ⁱ-[]ˢ : ∀ {cl 𝕂 𝕄 γ δ} {I : 𝕂 →ⁱ 𝕄 ∥ δ} {σ : 𝕂 ∥ γ →ˢ δ} {ρ : δ →ʳ γ} (t : Expr cl 𝕂 γ) →
+    []ⁱ-[]ˢ : ∀ {cl 𝕂 𝕄 γ δ} {I : 𝕂 →ⁱ 𝕄 ∥ δ} {σ : 𝕂 ∥ γ →ˢ δ} {ρ : 𝕊 % δ →ʳ γ} (t : Expr cl 𝕂 γ) →
           σ ˢ∘ʳ ρ ≈ˢ 𝟙ˢ → ([ I ]ⁱ ([ σ ]ˢ t)) ≈ ([ I ⁱ∘ˢ σ ]ˢ [ ρ ʳ∘ⁱ I ]ⁱ t)
     []ⁱ-[]ˢ (expr-var x) ξ = ≈-refl
     []ⁱ-[]ˢ {I = I} {σ = σ} {ρ = ρ} (expr-symb S es) ξ =
@@ -201,13 +201,17 @@ module Instantiation where
     [∘]ⁱ expr-eqty = ≈-eqty
     [∘]ⁱ expr-eqtm = ≈-eqtm
 
+  open Core public
 
   -- Notation for working with multiple signatures
   infix 5 _%_→ⁱ_∥_
-  _%_→ⁱ_∥_ = Core._→ⁱ_∥_
+  _%_→ⁱ_∥_ : ∀ (𝕊 : SymbolSignature) → MShape → MShape → VShape → Set
+  _%_→ⁱ_∥_ 𝕊 = Core._→ⁱ_∥_ {𝕊 = 𝕊}
 
   infix 6 _%[_]ⁱ_
-  _%[_]ⁱ_ = Core.[_]ⁱ_
+  _%[_]ⁱ_ : ∀ (𝕊 : SymbolSignature) {cl 𝕂 𝕄 γ} → 𝕂 →ⁱ 𝕄 ∥ γ → Expression.Expr 𝕊 cl 𝕂 γ → Expression.Expr 𝕊 cl 𝕄 γ
+  _%[_]ⁱ_ 𝕊 = Core.[_]ⁱ_ {𝕊 = 𝕊}
 
   infix 4 _%_≈ⁱ_
-  _%_≈ⁱ_ = Core._≈ⁱ_
+  _%_≈ⁱ_ : ∀ (𝕊 : SymbolSignature) {𝕄 𝕂 γ} (I J : 𝕂 →ⁱ 𝕄 ∥ γ) → Set
+  _%_≈ⁱ_ 𝕊 = Core._≈ⁱ_ {𝕊 = 𝕊}
