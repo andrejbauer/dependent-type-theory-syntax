@@ -201,12 +201,6 @@ module Substitution where
     []ˢ-𝟘-initial expr-eqty = ≈-eqty
     []ˢ-𝟘-initial expr-eqtm = ≈-eqtm
 
-  -- Notations
-
-  infix 5 _%[_]ˢ_
-  _%[_]ˢ_ : ∀ (𝕊 : Signature) {cl 𝕄 γ δ} → 𝕄 ∥ γ →ˢ δ → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 cl 𝕄 δ
-  _%[_]ˢ_ 𝕊 = [_]ˢ_ {𝕊 = 𝕊}
-
   infix 5 _%_∥_→ˢ_
   _%_∥_→ˢ_ : ∀ (𝕊 : Signature) → MShape → VShape → VShape → Set
   _%_∥_→ˢ_ 𝕊 = _∥_→ˢ_ {𝕊 = 𝕊}

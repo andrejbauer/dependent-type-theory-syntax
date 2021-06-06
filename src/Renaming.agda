@@ -150,7 +150,3 @@ module Renaming where
         ; equiv = record { refl = ≡ʳ-refl ; sym = ≡ʳ-sym ; trans = ≡ʳ-trans }
         ; ∘-resp-≈ = λ {_} {_} {_} {ρ} {_} {_} {τ} ζ ξ x → trans (cong ρ (ξ x)) (ζ (τ x))
         }
-
-  infix 6 _%[_]ʳ_
-  _%[_]ʳ_ : ∀ (𝕊 : Signature) {cl 𝕄} {γ δ} → (σ : γ →ʳ δ) → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 _ _ δ
-  _%[_]ʳ_ 𝕊 = [_]ʳ_ {𝕊 = 𝕊}

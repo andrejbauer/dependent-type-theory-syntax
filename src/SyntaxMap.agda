@@ -51,7 +51,7 @@ module SyntaxMap where
   [_]ᵐ_ : ∀ {𝕊 𝕋} → (𝕊 →ᵐ 𝕋) → ∀ {cl 𝕄 γ} → Expr 𝕊 𝕄 cl γ → Expr 𝕋 𝕄 cl γ
   [ f ]ᵐ (expr-var x) = expr-var x
   [_]ᵐ_ {𝕋 = 𝕋} f {𝕄 = 𝕄} (expr-symb S es) =
-    𝕋 %[ (λ M → [ f ]ᵐ es M) ]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S)
+    [ (λ M → [ f ]ᵐ es M) ]ⁱ ([ 𝟘-initial ]ʳ f S)
   [ f ]ᵐ (expr-meta M ts) = expr-meta M (λ i → [ f ]ᵐ (ts i))
   [ f ]ᵐ expr-eqty = expr-eqty
   [ f ]ᵐ expr-eqtm = expr-eqtm
@@ -62,7 +62,7 @@ module SyntaxMap where
                t ≈ u → [ f ]ᵐ t ≈ [ f ]ᵐ u
   []ᵐ-resp-≈ f (≈-≡ ξ) = ≈-≡ (cong ([ f ]ᵐ_) ξ)
   []ᵐ-resp-≈ {𝕋 = 𝕋} f (≈-symb {S = S} ξ) =
-    []ⁱ-resp-≈ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S) λ M → []ᵐ-resp-≈ f (ξ M)
+    []ⁱ-resp-≈ⁱ ([ 𝟘-initial ]ʳ f S) λ M → []ᵐ-resp-≈ f (ξ M)
   []ᵐ-resp-≈ f (≈-meta ξ) = ≈-meta (λ i → []ᵐ-resp-≈ f (ξ i))
 
   []ᵐ-resp-≈ᵐ : ∀ {𝕊 𝕋} {cl 𝕄 γ} {f g : 𝕊 →ᵐ 𝕋} (t : Expr 𝕊 𝕄 cl γ) →
@@ -93,7 +93,7 @@ module SyntaxMap where
     open Renaming
     open Substitution
 
-    [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → 𝕊 % [ 𝟙ᵐ ]ᵐ t ≈ t
+    [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ 𝟙ᵐ ]ᵐ t ≈ t
     [𝟙]ᵐ (expr-var x) = ≈-refl
     [𝟙]ᵐ (expr-symb S es) =
       ≈-symb (λ {cⁱ γⁱ} i → [𝟙]ᵐ-arg cⁱ γⁱ i)
@@ -125,10 +125,10 @@ module SyntaxMap where
         (≈-trans
            ([]ⁱ-resp-≈ⁱ-≈
               {t = [ 𝟘-initial ]ʳ f S}
-              {u = [ ρ ]ʳ (𝕋 %[ 𝟘-initial ]ʳ f S)}
+              {u = [ ρ ]ʳ ([ 𝟘-initial ]ʳ f S)}
               (λ M → ≈-refl)
               (≈-trans ([]ʳ-resp-≡ʳ (f S) (λ {()})) ([∘ʳ] (f S))))
-           (≈-sym ([ʳ∘ⁱ] (𝕋 %[ 𝟘-initial ]ʳ f S))))
+           (≈-sym ([ʳ∘ⁱ] ([ 𝟘-initial ]ʳ f S))))
     []ᵐ-[]ʳ (expr-meta M ts) = ≈-meta (λ i → []ᵐ-[]ʳ (ts i))
     []ᵐ-[]ʳ expr-eqty = ≈-eqty
     []ᵐ-[]ʳ expr-eqtm = ≈-eqtm
@@ -160,16 +160,16 @@ module SyntaxMap where
     ⇑ⁱ-resp-ᵐ∘ⁱ {I = I} M = ≈-sym ([]ᵐ-[]ʳ (I M))
 
     []ᵐ-[]ⁱ : ∀ {cl 𝕂 𝕄 γ} {f : 𝕊 →ᵐ 𝕋} {I : 𝕊 % 𝕂 →ⁱ 𝕄 ∥ γ} (t : Expr 𝕊 cl 𝕂 γ) →
-              [ f ]ᵐ (𝕊 %[ I ]ⁱ t) ≈ 𝕋 %[ f ᵐ∘ⁱ I ]ⁱ [ f ]ᵐ t
+              [ f ]ᵐ ([ I ]ⁱ t) ≈ [ f ᵐ∘ⁱ I ]ⁱ [ f ]ᵐ t
     []ᵐ-[]ⁱ (expr-var x) = ≈-refl
     []ᵐ-[]ⁱ {f = f} {I = I} (expr-symb S es) =
       ≈-trans
         ([]ⁱ-resp-≈ⁱ
-           (𝕋 %[ 𝟘-initial ]ʳ f S)
+           ([ 𝟘-initial ]ʳ f S)
            λ M → ≈-trans
                    ([]ᵐ-[]ⁱ (es M))
                    ([]ⁱ-resp-≈ⁱ ([ f ]ᵐ es M) (≈ⁱ-sym (⇑ⁱ-resp-ᵐ∘ⁱ {I = I}))))
-        ([∘ⁱ] (𝕋 %[ 𝟘-initial ]ʳ f S))
+        ([∘ⁱ] ([ 𝟘-initial ]ʳ f S))
     []ᵐ-[]ⁱ {f = f} {I = I} (expr-meta M ts) =
       ≈-trans
         ([]ᵐ-[]ˢ (I M))
@@ -194,12 +194,12 @@ module SyntaxMap where
   -- Action preserves composition
 
   module _ {𝕊 𝕋 𝕌} where
-    [∘]ᵐ : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → 𝕌 % [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
+    [∘]ᵐ : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
     [∘]ᵐ (expr-var x) = ≈-refl
     [∘]ᵐ {f = f} {g = g} (expr-symb S es) =
       ≈-trans
         ([]ⁱ-resp-≈ⁱ-≈ (λ M → [∘]ᵐ (es M)) (≈-sym ([]ᵐ-[]ʳ (f S))))
-        (≈-sym ([]ᵐ-[]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S)))
+        (≈-sym ([]ᵐ-[]ⁱ ([ 𝟘-initial ]ʳ f S)))
     [∘]ᵐ (expr-meta M ts) = ≈-meta (λ i → [∘]ᵐ (ts i))
     [∘]ᵐ expr-eqty = ≈-eqty
     [∘]ᵐ expr-eqtm = ≈-eqtm
