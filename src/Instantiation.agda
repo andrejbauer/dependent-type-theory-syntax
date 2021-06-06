@@ -5,8 +5,8 @@ import Renaming
 import Substitution
 
 module Instantiation where
-  -- Instantiations
-  module Core {𝕊 : Signature} where
+
+  module _ {𝕊 : Signature} where
 
     open Expression 𝕊
     open Substitution
@@ -39,6 +39,7 @@ module Instantiation where
     ≈ⁱ-trans ζ ξ M = ≈-trans (ζ M) (ξ M)
 
     -- identity instantiation
+
     𝟙ⁱ : ∀ {𝕄 γ} → 𝕄 →ⁱ 𝕄 ∥ γ
     𝟙ⁱ M = expr-meta-generic M
 
@@ -105,23 +106,23 @@ module Instantiation where
           ([]ʳ-resp-≡ʳ (I M) (λ {(var-left x) → refl ; (var-right y) → refl})))
         ([∘ʳ] (I M))
 
-    [ʳ∘ⁱ]ⁱ : ∀ {cl 𝕂 𝕄} {γ δ} {ρ : γ →ʳ δ} {I : 𝕂 →ⁱ 𝕄 ∥ γ} (t : Expr cl 𝕂 γ) →
+    [ʳ∘ⁱ] : ∀ {cl 𝕂 𝕄} {γ δ} {ρ : γ →ʳ δ} {I : 𝕂 →ⁱ 𝕄 ∥ γ} (t : Expr cl 𝕂 γ) →
              [ ρ ]ʳ ([ I ]ⁱ t) ≈ [ ρ ʳ∘ⁱ I ]ⁱ [ ρ ]ʳ t
-    [ʳ∘ⁱ]ⁱ (expr-var x) = ≈-refl
-    [ʳ∘ⁱ]ⁱ {ρ = ρ} {I = I} (expr-symb S es) =
+    [ʳ∘ⁱ] (expr-var x) = ≈-refl
+    [ʳ∘ⁱ] {ρ = ρ} {I = I} (expr-symb S es) =
       ≈-symb (λ i → ≈-trans
-                     ([ʳ∘ⁱ]ⁱ (es i))
+                     ([ʳ∘ⁱ] (es i))
                      ([]ⁱ-resp-≈ⁱ
                         ([ ⇑ʳ ρ ]ʳ es i)
                         (≈ⁱ-sym (⇑ⁱ-resp-ʳ∘ⁱ {I = I}))))
-    [ʳ∘ⁱ]ⁱ {ρ = ρ} {I = I} (expr-meta M ts) =
+    [ʳ∘ⁱ] {ρ = ρ} {I = I} (expr-meta M ts) =
       ≈-trans
         (≈-sym ([ʳ∘ˢ] (I M)))
         (≈-trans
-          ([]ˢ-resp-≈ˢ (λ { (var-left x) → ≈-refl ; (var-right y) →  [ʳ∘ⁱ]ⁱ (ts y)}) (I M))
+          ([]ˢ-resp-≈ˢ (λ { (var-left x) → ≈-refl ; (var-right y) →  [ʳ∘ⁱ] (ts y)}) (I M))
           ([ˢ∘ʳ] (I M)))
-    [ʳ∘ⁱ]ⁱ expr-eqty = ≈-eqty
-    [ʳ∘ⁱ]ⁱ expr-eqtm = ≈-eqtm
+    [ʳ∘ⁱ] expr-eqty = ≈-eqty
+    [ʳ∘ⁱ] expr-eqtm = ≈-eqtm
 
     -- composition of an instantiation and substitution
 
@@ -129,10 +130,6 @@ module Instantiation where
 
     _ⁱ∘ˢ_ : ∀ {𝕂 𝕄} {γ δ} (I : 𝕂 →ⁱ 𝕄 ∥ δ) (σ : 𝕂 ∥ γ →ˢ δ) → (𝕄 ∥ γ →ˢ δ)
     (I ⁱ∘ˢ σ) x = [ I ]ⁱ σ x
-
-    -- [ⁱ∘ˢ]ⁱ : ∀ {cl} {𝕂 𝕄} {γ δ} {σ : 𝕄 ∥ γ →ˢ δ} {I : 𝕂 →ⁱ 𝕄 ∥ γ} (t : Expr cl 𝕂 γ) →
-    --          [ σ ⁱ∘ˢ I ]ⁱ {!!} ≈ [ σ ]ˢ [ I ]ⁱ t
-    -- [ⁱ∘ˢ]ⁱ t = {!!}
 
     -- extension respects identity
 
@@ -146,14 +143,14 @@ module Instantiation where
     ⇑ⁱ-resp-∘ⁱ : ∀ {𝕂 𝕃 𝕄 γ δ} {I : 𝕂 →ⁱ 𝕃 ∥ γ} {J : 𝕃 →ⁱ 𝕄 ∥ γ} → ⇑ⁱ {δ = δ} (J ∘ⁱ I) ≈ⁱ ⇑ⁱ J ∘ⁱ ⇑ⁱ I
     ⇑ⁱ-resp-∘ⁱ {I = I} {J = J} M =
       ≈-trans
-        ([ʳ∘ⁱ]ⁱ (I M))
+        ([ʳ∘ⁱ] (I M))
         ([]ⁱ-resp-≈ⁱ ([ ⇑ʳ var-left ]ʳ I M)
           λ N → ≈-trans (≈-sym ([∘ʳ] (J N)))
                   (≈-trans ([]ʳ-resp-≡ʳ (J N)  λ {(var-left x) → refl ; (var-right y) → refl}) ([∘ʳ] (J N))))
 
     ⇑ⁱ-resp-ⁱ∘ˢ : ∀ {𝕂 𝕄} {γ δ η} {I : 𝕂 →ⁱ 𝕄 ∥ δ} {σ : 𝕂 ∥ γ →ˢ δ} →
                   ⇑ˢ {η = η} (I ⁱ∘ˢ σ ) ≈ˢ ⇑ⁱ I ⁱ∘ˢ ⇑ˢ σ
-    ⇑ⁱ-resp-ⁱ∘ˢ {σ = σ}(var-left x) = ≈-trans ([ʳ∘ⁱ]ⁱ (σ x)) ([]ⁱ-resp-≈ⁱ ([ var-left ]ʳ σ x) (λ _ → ≈-refl))
+    ⇑ⁱ-resp-ⁱ∘ˢ {σ = σ}(var-left x) = ≈-trans ([ʳ∘ⁱ] (σ x)) ([]ⁱ-resp-≈ⁱ ([ var-left ]ʳ σ x) (λ _ → ≈-refl))
     ⇑ⁱ-resp-ⁱ∘ˢ (var-right y) = ≈-refl
 
 
@@ -167,12 +164,12 @@ module Instantiation where
 
     -- action of the identity
 
-    [𝟙]ⁱ : ∀ {cl 𝕄 γ} (t : Expr cl 𝕄 γ) → [ 𝟙ⁱ ]ⁱ t ≈ t
-    [𝟙]ⁱ (expr-var x) = ≈-refl
-    [𝟙]ⁱ (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ⁱ-resp-≈ⁱ (es i) ⇑ⁱ-resp-𝟙ⁱ) ([𝟙]ⁱ (es i)))
-    [𝟙]ⁱ (expr-meta M ts) = ≈-meta (λ i → [𝟙]ⁱ (ts i))
-    [𝟙]ⁱ (expr-eqty) = ≈-eqty
-    [𝟙]ⁱ (expr-eqtm) = ≈-eqtm
+    [𝟙ⁱ] : ∀ {cl 𝕄 γ} (t : Expr cl 𝕄 γ) → [ 𝟙ⁱ ]ⁱ t ≈ t
+    [𝟙ⁱ] (expr-var x) = ≈-refl
+    [𝟙ⁱ] (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ⁱ-resp-≈ⁱ (es i) ⇑ⁱ-resp-𝟙ⁱ) ([𝟙ⁱ] (es i)))
+    [𝟙ⁱ] (expr-meta M ts) = ≈-meta (λ i → [𝟙ⁱ] (ts i))
+    [𝟙ⁱ] (expr-eqty) = ≈-eqty
+    [𝟙ⁱ] (expr-eqtm) = ≈-eqtm
 
     -- interaction of instantiation, substitution and renaming
 
@@ -239,30 +236,29 @@ module Instantiation where
 
     -- action of composition
 
-    [∘]ⁱ : ∀ {cl 𝕂 𝕃 𝕄 γ} {I : 𝕂 →ⁱ 𝕃 ∥ γ} {J : 𝕃 →ⁱ 𝕄 ∥ γ} (t : Expr cl 𝕂 γ) → [ J ∘ⁱ I ]ⁱ t ≈ [ J ]ⁱ [ I ]ⁱ t
-    [∘]ⁱ (expr-var _) = ≈-refl
-    [∘]ⁱ {I = I} {J = J} (expr-symb S es) =
-      ≈-symb (λ i → ≈-trans ([]ⁱ-resp-≈ⁱ (es i) (⇑ⁱ-resp-∘ⁱ {I = I})) ([∘]ⁱ (es i)))
-    [∘]ⁱ {I = I} {J = J} (expr-meta M ts) =
+    [∘ⁱ] : ∀ {cl 𝕂 𝕃 𝕄 γ} {I : 𝕂 →ⁱ 𝕃 ∥ γ} {J : 𝕃 →ⁱ 𝕄 ∥ γ} (t : Expr cl 𝕂 γ) → [ J ∘ⁱ I ]ⁱ t ≈ [ J ]ⁱ [ I ]ⁱ t
+    [∘ⁱ] (expr-var _) = ≈-refl
+    [∘ⁱ] {I = I} {J = J} (expr-symb S es) =
+      ≈-symb (λ i → ≈-trans ([]ⁱ-resp-≈ⁱ (es i) (⇑ⁱ-resp-∘ⁱ {I = I})) ([∘ⁱ] (es i)))
+    [∘ⁱ] {I = I} {J = J} (expr-meta M ts) =
       ≈-sym (≈-trans
                ([]ⁱ-[]ˢ {I = J} {ρ = var-left} (I M) λ _ → ≈-refl)
                ([]ˢ-resp-≈ˢ
-                 (λ { (var-left x) → ≈-refl ; (var-right x) → ≈-sym ([∘]ⁱ (ts x))})
+                 (λ { (var-left x) → ≈-refl ; (var-right x) → ≈-sym ([∘ⁱ] (ts x))})
                  ([ ⇑ⁱ J ]ⁱ (I M))))
-    [∘]ⁱ expr-eqty = ≈-eqty
-    [∘]ⁱ expr-eqtm = ≈-eqtm
-
-  open Core public
+    [∘ⁱ] expr-eqty = ≈-eqty
+    [∘ⁱ] expr-eqtm = ≈-eqtm
 
   -- Notation for working with multiple signatures
+
   infix 5 _%_→ⁱ_∥_
   _%_→ⁱ_∥_ : ∀ (𝕊 : Signature) → MShape → MShape → VShape → Set
-  _%_→ⁱ_∥_ 𝕊 = Core._→ⁱ_∥_ {𝕊 = 𝕊}
+  _%_→ⁱ_∥_ 𝕊 = _→ⁱ_∥_ {𝕊 = 𝕊}
 
   infix 6 _%[_]ⁱ_
   _%[_]ⁱ_ : ∀ (𝕊 : Signature) {cl 𝕂 𝕄 γ} → 𝕂 →ⁱ 𝕄 ∥ γ → Expression.Expr 𝕊 cl 𝕂 γ → Expression.Expr 𝕊 cl 𝕄 γ
-  _%[_]ⁱ_ 𝕊 = Core.[_]ⁱ_ {𝕊 = 𝕊}
+  _%[_]ⁱ_ 𝕊 = [_]ⁱ_ {𝕊 = 𝕊}
 
   infix 4 _%_≈ⁱ_
   _%_≈ⁱ_ : ∀ (𝕊 : Signature) {𝕄 𝕂 γ} (I J : 𝕂 →ⁱ 𝕄 ∥ γ) → Set
-  _%_≈ⁱ_ 𝕊 = Core._≈ⁱ_ {𝕊 = 𝕊}
+  _%_≈ⁱ_ 𝕊 = _≈ⁱ_ {𝕊 = 𝕊}

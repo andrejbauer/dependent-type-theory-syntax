@@ -128,7 +128,7 @@ module SyntaxMap where
               {u = [ ρ ]ʳ (𝕋 %[ 𝟘-initial ]ʳ f S)}
               (λ M → ≈-refl)
               (≈-trans ([]ʳ-resp-≡ʳ (f S) (λ {()})) ([∘ʳ] (f S))))
-           (≈-sym ([ʳ∘ⁱ]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S))))
+           (≈-sym ([ʳ∘ⁱ] (𝕋 %[ 𝟘-initial ]ʳ f S))))
     []ᵐ-[]ʳ (expr-meta M ts) = ≈-meta (λ i → []ᵐ-[]ʳ (ts i))
     []ᵐ-[]ʳ expr-eqty = ≈-eqty
     []ᵐ-[]ʳ expr-eqtm = ≈-eqtm
@@ -169,7 +169,7 @@ module SyntaxMap where
            λ M → ≈-trans
                    ([]ᵐ-[]ⁱ (es M))
                    ([]ⁱ-resp-≈ⁱ ([ f ]ᵐ es M) (≈ⁱ-sym (⇑ⁱ-resp-ᵐ∘ⁱ {I = I}))))
-        ([∘]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S))
+        ([∘ⁱ] (𝕋 %[ 𝟘-initial ]ʳ f S))
     []ᵐ-[]ⁱ {f = f} {I = I} (expr-meta M ts) =
       ≈-trans
         ([]ᵐ-[]ˢ (I M))
@@ -189,7 +189,7 @@ module SyntaxMap where
   𝟙ᵐ-right {f = f} S =
     ≈-trans
       ([]ⁱ-resp-≈ⁱ ([ 𝟘-initial ]ʳ (f S)) λ M → []ᵐ-meta-generic {M = M})
-      (≈-trans ([𝟙]ⁱ ([ 𝟘-initial ]ʳ f S)) ([]ʳ-id (λ { ()})))
+      (≈-trans ([𝟙ⁱ] ([ 𝟘-initial ]ʳ f S)) ([]ʳ-id (λ { ()})))
 
   -- Action preserves composition
 
