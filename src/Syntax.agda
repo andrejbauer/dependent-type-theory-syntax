@@ -7,6 +7,7 @@ open import Relation.Binary using (Setoid)
 module Syntax where
 
   -- Syntactic classes
+
   data ObjectClass : Set where
     Ty Tm : ObjectClass
 
@@ -45,14 +46,16 @@ module Syntax where
     mv-right : ∀ {𝕂 𝕄} cl γ → [ cl , γ ]∈ 𝕄 → [ cl , γ ]∈ 𝕂 ⊕ᵐᵛ 𝕄
 
   -- Symbol signature
-  record SymbolSignature : Set₁ where
+
+  record Signature : Set₁ where
     field
       symb : ObjectClass → Set -- a set of symbol names, one for each class
       symb-arg : ∀ {cl} → symb cl → MShape
 
   -- Expressions
-  module Expression (𝕊 : SymbolSignature) where
-    open SymbolSignature 𝕊
+
+  module Expression (𝕊 : Signature) where
+    open Signature 𝕊
 
     data Expr : Class → (𝕄 : MShape) → (γ : VShape) → Set
 
@@ -79,8 +82,10 @@ module Syntax where
     expr-meta-generic {cl = EqTm} M = expr-eqtm
 
   -- Syntactic equality
-  module Equality {𝕊 : SymbolSignature} where
-    open SymbolSignature 𝕊
+
+  module Equality {𝕊 : Signature} where
+
+    open Signature 𝕊
     open Expression 𝕊
 
     infix 4 _≈_
@@ -115,6 +120,7 @@ module Syntax where
     ≈-trans (≈-meta ζ) (≈-meta ξ) = ≈-meta (λ i → ≈-trans (ζ i) (ξ i))
 
     -- the setoid of expressions
+
     Expr-setoid : ∀ (cl : Class) (𝕄 : MShape) (γ : VShape) →  Setoid lzero lzero
     Expr-setoid cl 𝕄 γ =
       record
@@ -125,5 +131,5 @@ module Syntax where
 
   infix 4 _%_≈_
 
-  _%_≈_ : ∀ (𝕊 : SymbolSignature) {cl 𝕄 γ} → (t u : Expression.Expr 𝕊 cl 𝕄 γ) → Set
+  _%_≈_ : ∀ (𝕊 : Signature) {cl 𝕄 γ} → (t u : Expression.Expr 𝕊 cl 𝕄 γ) → Set
   _%_≈_ 𝕊 = Equality._≈_ {𝕊 = 𝕊}

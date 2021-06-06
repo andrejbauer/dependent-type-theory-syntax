@@ -9,7 +9,7 @@ open import Instantiation
 
 module SyntaxMap where
 
-  open SymbolSignature
+  open Signature
   open Expression
   open Equality
 
@@ -17,7 +17,7 @@ module SyntaxMap where
 
   -- syntax map
 
-  _→ᵐ_ : SymbolSignature → SymbolSignature → Set
+  _→ᵐ_ : Signature → Signature → Set
   𝕊 →ᵐ 𝕋 = ∀ {cl} (S : symb 𝕊 cl) → Expr 𝕋 (obj cl) (symb-arg 𝕊 S) 𝟘
 
   -- equality of syntax maps
@@ -219,7 +219,7 @@ module SyntaxMap where
    SyntaxMaps : Category (suc zero) zero zero
    SyntaxMaps =
      record
-       { Obj = SymbolSignature
+       { Obj = Signature
        ; _⇒_ = _→ᵐ_
        ; _≈_ = _≈ᵐ_
        ; id = 𝟙ᵐ

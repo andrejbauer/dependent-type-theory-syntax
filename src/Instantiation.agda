@@ -6,7 +6,7 @@ import Substitution
 
 module Instantiation where
   -- Instantiations
-  module Core {𝕊 : SymbolSignature} where
+  module Core {𝕊 : Signature} where
 
     open Expression 𝕊
     open Substitution
@@ -256,13 +256,13 @@ module Instantiation where
 
   -- Notation for working with multiple signatures
   infix 5 _%_→ⁱ_∥_
-  _%_→ⁱ_∥_ : ∀ (𝕊 : SymbolSignature) → MShape → MShape → VShape → Set
+  _%_→ⁱ_∥_ : ∀ (𝕊 : Signature) → MShape → MShape → VShape → Set
   _%_→ⁱ_∥_ 𝕊 = Core._→ⁱ_∥_ {𝕊 = 𝕊}
 
   infix 6 _%[_]ⁱ_
-  _%[_]ⁱ_ : ∀ (𝕊 : SymbolSignature) {cl 𝕂 𝕄 γ} → 𝕂 →ⁱ 𝕄 ∥ γ → Expression.Expr 𝕊 cl 𝕂 γ → Expression.Expr 𝕊 cl 𝕄 γ
+  _%[_]ⁱ_ : ∀ (𝕊 : Signature) {cl 𝕂 𝕄 γ} → 𝕂 →ⁱ 𝕄 ∥ γ → Expression.Expr 𝕊 cl 𝕂 γ → Expression.Expr 𝕊 cl 𝕄 γ
   _%[_]ⁱ_ 𝕊 = Core.[_]ⁱ_ {𝕊 = 𝕊}
 
   infix 4 _%_≈ⁱ_
-  _%_≈ⁱ_ : ∀ (𝕊 : SymbolSignature) {𝕄 𝕂 γ} (I J : 𝕂 →ⁱ 𝕄 ∥ γ) → Set
+  _%_≈ⁱ_ : ∀ (𝕊 : Signature) {𝕄 𝕂 γ} (I J : 𝕂 →ⁱ 𝕄 ∥ γ) → Set
   _%_≈ⁱ_ 𝕊 = Core._≈ⁱ_ {𝕊 = 𝕊}

@@ -82,7 +82,7 @@ module Renaming where
   ⇑ʳ-resp-∘ʳ (var-left x) = refl
   ⇑ʳ-resp-∘ʳ (var-right y) = refl
 
-  module _ {𝕊 : SymbolSignature} where
+  module _ {𝕊 : Signature} where
     open Expression 𝕊
 
     -- the action of a renaming on an expression
@@ -152,5 +152,5 @@ module Renaming where
         }
 
   infix 6 _%[_]ʳ_
-  _%[_]ʳ_ : ∀ (𝕊 : SymbolSignature) {cl 𝕄} {γ δ} → (σ : γ →ʳ δ) → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 _ _ δ
+  _%[_]ʳ_ : ∀ (𝕊 : Signature) {cl 𝕄} {γ δ} → (σ : γ →ʳ δ) → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 _ _ δ
   _%[_]ʳ_ 𝕊 = [_]ʳ_ {𝕊 = 𝕊}
