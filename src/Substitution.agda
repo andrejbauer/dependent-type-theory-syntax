@@ -6,7 +6,7 @@ import Renaming
 -- Substitutions
 module Substitution where
 
-  module Core {𝕊 : Signature} where
+  module _ {𝕊 : Signature} where
 
     open Expression 𝕊
     open Renaming
@@ -155,59 +155,57 @@ module Substitution where
 
     -- action of a composition of a renaming and a substitition
 
-    [ˢ∘ʳ]ˢ : ∀ {𝕄 cl} {γ δ η} → {σ : 𝕄 ∥ δ →ˢ η} → {ρ : γ →ʳ δ} (t : Expr cl 𝕄 γ) → [ σ ˢ∘ʳ ρ ]ˢ t  ≈ [ σ ]ˢ [ ρ ]ʳ t
-    [ˢ∘ʳ]ˢ (expr-var x) = ≈-refl
-    [ˢ∘ʳ]ˢ (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-resp-ˢ∘ʳ (es i)) ([ˢ∘ʳ]ˢ (es i)))
-    [ˢ∘ʳ]ˢ (expr-meta M ts) = ≈-meta (λ i → [ˢ∘ʳ]ˢ (ts i))
-    [ˢ∘ʳ]ˢ expr-eqty = ≈-eqty
-    [ˢ∘ʳ]ˢ expr-eqtm = ≈-eqtm
+    [ˢ∘ʳ] : ∀ {𝕄 cl} {γ δ η} → {σ : 𝕄 ∥ δ →ˢ η} → {ρ : γ →ʳ δ} (t : Expr cl 𝕄 γ) → [ σ ˢ∘ʳ ρ ]ˢ t  ≈ [ σ ]ˢ [ ρ ]ʳ t
+    [ˢ∘ʳ] (expr-var x) = ≈-refl
+    [ˢ∘ʳ] (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-resp-ˢ∘ʳ (es i)) ([ˢ∘ʳ] (es i)))
+    [ˢ∘ʳ] (expr-meta M ts) = ≈-meta (λ i → [ˢ∘ʳ] (ts i))
+    [ˢ∘ʳ] expr-eqty = ≈-eqty
+    [ˢ∘ʳ] expr-eqtm = ≈-eqtm
 
-    [ʳ∘ˢ]ˢ : ∀ {𝕄 cl} {γ δ η} → {σ : 𝕄 ∥ γ →ˢ δ} → {ρ : δ →ʳ η} (t : Expr cl 𝕄 γ) → [ ρ ʳ∘ˢ σ ]ˢ t ≈ [ ρ ]ʳ ([ σ ]ˢ  t)
-    [ʳ∘ˢ]ˢ (expr-var x) = ≈-refl
-    [ʳ∘ˢ]ˢ (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-ʳ∘ˢ (es i)) ([ʳ∘ˢ]ˢ (es i)))
-    [ʳ∘ˢ]ˢ (expr-meta M ts) = ≈-meta (λ i → [ʳ∘ˢ]ˢ (ts i))
-    [ʳ∘ˢ]ˢ expr-eqty = ≈-eqty
-    [ʳ∘ˢ]ˢ expr-eqtm = ≈-eqtm
+    [ʳ∘ˢ] : ∀ {𝕄 cl} {γ δ η} → {σ : 𝕄 ∥ γ →ˢ δ} → {ρ : δ →ʳ η} (t : Expr cl 𝕄 γ) → [ ρ ʳ∘ˢ σ ]ˢ t ≈ [ ρ ]ʳ ([ σ ]ˢ  t)
+    [ʳ∘ˢ] (expr-var x) = ≈-refl
+    [ʳ∘ˢ] (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-ʳ∘ˢ (es i)) ([ʳ∘ˢ] (es i)))
+    [ʳ∘ˢ] (expr-meta M ts) = ≈-meta (λ i → [ʳ∘ˢ] (ts i))
+    [ʳ∘ˢ] expr-eqty = ≈-eqty
+    [ʳ∘ˢ] expr-eqtm = ≈-eqtm
 
     -- composition commutes with extensions
 
     ⇑ˢ-resp-∘ˢ : ∀ {𝕄} {β γ δ η} {σ : 𝕄 ∥ β →ˢ γ} {τ : 𝕄 ∥ γ →ˢ δ} → ⇑ˢ {η = η} (τ ∘ˢ σ) ≈ˢ ⇑ˢ τ ∘ˢ ⇑ˢ σ
-    ⇑ˢ-resp-∘ˢ {σ = σ} (var-left x) = ≈-trans (≈-trans (≈-sym ([ʳ∘ˢ]ˢ (σ x))) ([]ˢ-resp-≈ˢ (λ x₁ → ≈-refl) (σ x))) ([ˢ∘ʳ]ˢ (σ x))
+    ⇑ˢ-resp-∘ˢ {σ = σ} (var-left x) = ≈-trans (≈-trans (≈-sym ([ʳ∘ˢ] (σ x))) ([]ˢ-resp-≈ˢ (λ x₁ → ≈-refl) (σ x))) ([ˢ∘ʳ] (σ x))
     ⇑ˢ-resp-∘ˢ (var-right y) = ≈-refl
 
     -- action of substitutions is functorial
 
-    [𝟙]ˢ : ∀ {cl 𝕄 γ} (t : Expr cl 𝕄 γ) → [ 𝟙ˢ ]ˢ t ≈ t
-    [𝟙]ˢ (expr-var x) = ≈-refl
-    [𝟙]ˢ (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-𝟙ˢ (es i)) ([𝟙]ˢ (es i)))
-    [𝟙]ˢ (expr-meta M ts) = ≈-meta (λ i → [𝟙]ˢ (ts i))
-    [𝟙]ˢ expr-eqty = ≈-eqty
-    [𝟙]ˢ expr-eqtm = ≈-eqtm
+    [𝟙ˢ] : ∀ {cl 𝕄 γ} (t : Expr cl 𝕄 γ) → [ 𝟙ˢ ]ˢ t ≈ t
+    [𝟙ˢ] (expr-var x) = ≈-refl
+    [𝟙ˢ] (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-𝟙ˢ (es i)) ([𝟙ˢ] (es i)))
+    [𝟙ˢ] (expr-meta M ts) = ≈-meta (λ i → [𝟙ˢ] (ts i))
+    [𝟙ˢ] expr-eqty = ≈-eqty
+    [𝟙ˢ] expr-eqtm = ≈-eqtm
 
-    [∘]ˢ : ∀ {cl 𝕄} {γ δ η} {σ : 𝕄 ∥ γ →ˢ δ} {τ : 𝕄 ∥ δ →ˢ η} (t : Expr cl 𝕄 γ) → [ τ ∘ˢ σ ]ˢ t ≈ [ τ ]ˢ [ σ ]ˢ t
-    [∘]ˢ (expr-var x) = ≈-refl
-    [∘]ˢ (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-resp-∘ˢ (es i)) ([∘]ˢ (es i)))
-    [∘]ˢ (expr-meta M ts) = ≈-meta (λ i → [∘]ˢ (ts i))
-    [∘]ˢ expr-eqty = ≈-eqty
-    [∘]ˢ expr-eqtm = ≈-eqtm
+    [∘ˢ] : ∀ {cl 𝕄} {γ δ η} {σ : 𝕄 ∥ γ →ˢ δ} {τ : 𝕄 ∥ δ →ˢ η} (t : Expr cl 𝕄 γ) → [ τ ∘ˢ σ ]ˢ t ≈ [ τ ]ˢ [ σ ]ˢ t
+    [∘ˢ] (expr-var x) = ≈-refl
+    [∘ˢ] (expr-symb S es) = ≈-symb (λ i → ≈-trans ([]ˢ-resp-≈ˢ ⇑ˢ-resp-∘ˢ (es i)) ([∘ˢ] (es i)))
+    [∘ˢ] (expr-meta M ts) = ≈-meta (λ i → [∘ˢ] (ts i))
+    [∘ˢ] expr-eqty = ≈-eqty
+    [∘ˢ] expr-eqtm = ≈-eqtm
 
     []ˢ-id : ∀ {cl 𝕄 γ} {σ : 𝕄 ∥ γ →ˢ γ} {t : Expr cl 𝕄 γ} → σ ≈ˢ 𝟙ˢ → [ σ ]ˢ t ≈ t
-    []ˢ-id {t = t} ξ = ≈-trans ([]ˢ-resp-≈ˢ ξ t) ([𝟙]ˢ t)
+    []ˢ-id {t = t} ξ = ≈-trans ([]ˢ-resp-≈ˢ ξ t) ([𝟙ˢ] t)
 
     []ˢ-𝟘-initial : ∀ {cl 𝕄 γ} {σ : 𝕄 ∥ γ →ˢ 𝟘} (t : Expr cl 𝕄 𝟘) → [ σ ]ˢ [ 𝟘-initial ]ʳ t ≈ t
     []ˢ-𝟘-initial (expr-symb S es) =
-      ≈-symb (λ i → ≈-trans (≈-sym ([ˢ∘ʳ]ˢ (es i))) ([]ˢ-id (λ {(var-right x) → ≈-refl})))
+      ≈-symb (λ i → ≈-trans (≈-sym ([ˢ∘ʳ] (es i))) ([]ˢ-id (λ {(var-right x) → ≈-refl})))
     []ˢ-𝟘-initial (expr-meta M ts) = ≈-meta (λ i → []ˢ-𝟘-initial (ts i))
     []ˢ-𝟘-initial expr-eqty = ≈-eqty
     []ˢ-𝟘-initial expr-eqtm = ≈-eqtm
-
-  open Core public
 
   -- Notations
 
   infix 5 _%[_]ˢ_
   _%[_]ˢ_ : ∀ (𝕊 : Signature) {cl 𝕄 γ δ} → 𝕄 ∥ γ →ˢ δ → Expression.Expr 𝕊 cl 𝕄 γ → Expression.Expr 𝕊 cl 𝕄 δ
-  _%[_]ˢ_ 𝕊 = Core.[_]ˢ_ {𝕊 = 𝕊}
+  _%[_]ˢ_ 𝕊 = [_]ˢ_ {𝕊 = 𝕊}
 
   infix 5 _%_∥_→ˢ_
   _%_∥_→ˢ_ : ∀ (𝕊 : Signature) → MShape → VShape → VShape → Set

@@ -116,10 +116,10 @@ module Instantiation where
                         (≈ⁱ-sym (⇑ⁱ-resp-ʳ∘ⁱ {I = I}))))
     [ʳ∘ⁱ]ⁱ {ρ = ρ} {I = I} (expr-meta M ts) =
       ≈-trans
-        (≈-sym ([ʳ∘ˢ]ˢ (I M)))
+        (≈-sym ([ʳ∘ˢ] (I M)))
         (≈-trans
           ([]ˢ-resp-≈ˢ (λ { (var-left x) → ≈-refl ; (var-right y) →  [ʳ∘ⁱ]ⁱ (ts y)}) (I M))
-          ([ˢ∘ʳ]ˢ (I M)))
+          ([ˢ∘ʳ] (I M)))
     [ʳ∘ⁱ]ⁱ expr-eqty = ≈-eqty
     [ʳ∘ⁱ]ⁱ expr-eqtm = ≈-eqtm
 
@@ -161,7 +161,7 @@ module Instantiation where
 
     []ⁱ-meta-generic : ∀ {𝕂 𝕄} {γ} {I : 𝕂 →ⁱ 𝕄 ∥ γ} {clᴹ γᴹ} {M : [ clᴹ , γᴹ ]∈ 𝕂} → [ ⇑ⁱ I ]ⁱ (expr-meta-generic {γ = γ} M) ≈ I M
     []ⁱ-meta-generic {I = I} {clᴹ = obj _} {M = M} =
-      ≈-trans (≈-sym ([ˢ∘ʳ]ˢ (I M))) ([]ˢ-id (λ { (var-left _) → ≈-refl ; (var-right _) → ≈-refl}))
+      ≈-trans (≈-sym ([ˢ∘ʳ] (I M))) ([]ˢ-id (λ { (var-left _) → ≈-refl ; (var-right _) → ≈-refl}))
     []ⁱ-meta-generic {clᴹ = EqTy} = ≈-eqty
     []ⁱ-meta-generic {clᴹ = EqTm} = ≈-eqtm
 
@@ -194,8 +194,8 @@ module Instantiation where
                           (var-left x) → ≈-sym ([]ⁱ-resp-≈ I (ξ x))
                           (var-right x) → []ⁱ-[]ˢ (ts x) ξ)
                        (I M))
-          ([∘]ˢ (I M)))
-        (≈-sym ([]ˢ-resp-≈ (I ⁱ∘ˢ σ) (≈-sym ([ˢ∘ʳ]ˢ (I M))) ))
+          ([∘ˢ] (I M)))
+        (≈-sym ([]ˢ-resp-≈ (I ⁱ∘ˢ σ) (≈-sym ([ˢ∘ʳ] (I M))) ))
     []ⁱ-[]ˢ expr-eqty _ = ≈-eqty
     []ⁱ-[]ˢ expr-eqtm _ = ≈-eqtm
 
@@ -206,14 +206,14 @@ module Instantiation where
                   ⇑ⁱ {δ = η} (σ ˢ∘ⁱ I) ≈ⁱ ⇑ˢ σ ˢ∘ⁱ ⇑ⁱ I
     ⇑ⁱ-resp-ˢ∘ⁱ {I = I} M =
       ≈-trans
-        (≈-sym ([ʳ∘ˢ]ˢ (I M)))
+        (≈-sym ([ʳ∘ˢ] (I M)))
         (≈-trans
            ([]ˢ-resp-≈ˢ (≈ˢ-sym ⇑ˢ-resp-ʳ∘ˢ) (I M))
            (≈-trans
               ([]ˢ-resp-≈ˢ
                  (λ { (var-left x) → ≈-refl ; (var-right y) → ≈-refl})
                  (I M))
-              ([ˢ∘ʳ]ˢ (I M))))
+              ([ˢ∘ʳ] (I M))))
 
     []ˢ-[]ⁱ : ∀ {cl 𝕂 𝕄 γ δ η} {I : 𝕂 →ⁱ 𝕄 ∥ γ} {σ : 𝕊 % 𝕄 ∥ γ →ˢ δ} {ρ : η →ʳ δ} {τ : η →ʳ γ} (t : Expr cl 𝕂 η) →
               (∀ x → σ (τ x) ≈ expr-var (ρ x)) → [ σ ]ˢ ([ I ]ⁱ ([ τ ]ʳ t)) ≈ [ σ ˢ∘ⁱ I ]ⁱ ([ ρ ]ʳ t)
@@ -228,12 +228,12 @@ module Instantiation where
              ([]ⁱ-resp-≈ⁱ ([ ⇑ʳ ρ ]ʳ es i) (≈ⁱ-sym (⇑ⁱ-resp-ˢ∘ⁱ {σ = σ} {I = I}))))
     []ˢ-[]ⁱ {I = I} {σ = σ} (expr-meta M ts) ξ =
       ≈-trans
-        (≈-sym ([∘]ˢ (I M)))
+        (≈-sym ([∘ˢ] (I M)))
         (≈-trans
            ([]ˢ-resp-≈ˢ
-              (λ { (var-left x) → ≈-trans (≈-sym ([𝟙]ˢ (σ x))) ([ˢ∘ʳ]ˢ (σ x))
+              (λ { (var-left x) → ≈-trans (≈-sym ([𝟙ˢ] (σ x))) ([ˢ∘ʳ] (σ x))
                  ; (var-right j) → []ˢ-[]ⁱ (ts j) ξ}) (I M))
-           ([∘]ˢ (I M)))
+           ([∘ˢ] (I M)))
     []ˢ-[]ⁱ expr-eqty ξ = ≈-eqty
     []ˢ-[]ⁱ expr-eqtm ξ = ≈-eqtm
 

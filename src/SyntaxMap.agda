@@ -101,7 +101,7 @@ module SyntaxMap where
               [𝟙]ᵐ-arg (obj x) γⁱ i =
                 ≈-trans
                   ([]ˢ-resp-≈ _ ([]ʳ-resp-≈ _ ([𝟙]ᵐ (es i))))
-                  (≈-trans (≈-sym ([ˢ∘ʳ]ˢ (es i))) ([]ˢ-id (λ { (var-left _) → ≈-refl ; (var-right _) → ≈-refl })))
+                  (≈-trans (≈-sym ([ˢ∘ʳ] (es i))) ([]ˢ-id (λ { (var-left _) → ≈-refl ; (var-right _) → ≈-refl })))
               [𝟙]ᵐ-arg EqTy γⁱ i = ≈-eqty
               [𝟙]ᵐ-arg EqTm γⁱ i = ≈-eqtm
     [𝟙]ᵐ (expr-meta M ts) = ≈-meta λ i → [𝟙]ᵐ (ts i)
