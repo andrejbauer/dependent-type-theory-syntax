@@ -127,7 +127,7 @@ module SyntaxMap where
               {t = [ 𝟘-initial ]ʳ f S}
               {u = [ ρ ]ʳ (𝕋 %[ 𝟘-initial ]ʳ f S)}
               (λ M → ≈-refl)
-              (≈-trans ([]ʳ-resp-≡ʳ (f S) (λ {()})) ([∘]ʳ (f S))))
+              (≈-trans ([]ʳ-resp-≡ʳ (f S) (λ {()})) ([∘ʳ] (f S))))
            (≈-sym ([ʳ∘ⁱ]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S))))
     []ᵐ-[]ʳ (expr-meta M ts) = ≈-meta (λ i → []ᵐ-[]ʳ (ts i))
     []ᵐ-[]ʳ expr-eqty = ≈-eqty

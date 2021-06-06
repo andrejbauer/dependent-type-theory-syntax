@@ -101,9 +101,9 @@ module Instantiation where
     ⇑ⁱ-resp-ʳ∘ⁱ {I = I} M =
       ≈-trans
         (≈-trans
-          (≈-sym ([∘]ʳ (I M)))
+          (≈-sym ([∘ʳ] (I M)))
           ([]ʳ-resp-≡ʳ (I M) (λ {(var-left x) → refl ; (var-right y) → refl})))
-        ([∘]ʳ (I M))
+        ([∘ʳ] (I M))
 
     [ʳ∘ⁱ]ⁱ : ∀ {cl 𝕂 𝕄} {γ δ} {ρ : γ →ʳ δ} {I : 𝕂 →ⁱ 𝕄 ∥ γ} (t : Expr cl 𝕂 γ) →
              [ ρ ]ʳ ([ I ]ⁱ t) ≈ [ ρ ʳ∘ⁱ I ]ⁱ [ ρ ]ʳ t
@@ -148,8 +148,8 @@ module Instantiation where
       ≈-trans
         ([ʳ∘ⁱ]ⁱ (I M))
         ([]ⁱ-resp-≈ⁱ ([ ⇑ʳ var-left ]ʳ I M)
-          λ N → ≈-trans (≈-sym ([∘]ʳ (J N)))
-                  (≈-trans ([]ʳ-resp-≡ʳ (J N)  λ {(var-left x) → refl ; (var-right y) → refl}) ([∘]ʳ (J N))))
+          λ N → ≈-trans (≈-sym ([∘ʳ] (J N)))
+                  (≈-trans ([]ʳ-resp-≡ʳ (J N)  λ {(var-left x) → refl ; (var-right y) → refl}) ([∘ʳ] (J N))))
 
     ⇑ⁱ-resp-ⁱ∘ˢ : ∀ {𝕂 𝕄} {γ δ η} {I : 𝕂 →ⁱ 𝕄 ∥ δ} {σ : 𝕂 ∥ γ →ˢ δ} →
                   ⇑ˢ {η = η} (I ⁱ∘ˢ σ ) ≈ˢ ⇑ⁱ I ⁱ∘ˢ ⇑ˢ σ
