@@ -120,6 +120,6 @@ module SyntaxMap where
        ; identityˡ = λ S → [𝟙]ᵐ _
        ; identityʳ = λ {𝕊} {𝕋} {f} {cl} S → {!!}
        ; identity² = λ S → [𝟙]ᵐ _
-       ; equiv = record { refl = ≈ᵐ-refl ; sym = ≈ᵐ-sym ; trans = ≈ᵐ-trans }
+       ; equiv = record { refl = λ {f} {cl} S → Equality.≈-refl _ ; sym = ≈ᵐ-sym ; trans = ≈ᵐ-trans }
        ; ∘-resp-≈ = {!!}
        }
