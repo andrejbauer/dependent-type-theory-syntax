@@ -27,8 +27,16 @@ module Instantiation where
     _≈ⁱ_ : ∀ {𝕂 𝕄} {γ} (I J : 𝕂 →ⁱ 𝕄 ∥ γ) → Set
     I ≈ⁱ J = ∀ {clᴹ γᴹ} (M : [ clᴹ , γᴹ ]∈ _) → I M ≈ J M
 
+    -- equality of instaniations is an equivalence relation
+
+    ≈ⁱ-refl : ∀ {𝕂 𝕄} {γ} {I : 𝕂 →ⁱ 𝕄 ∥ γ} → I ≈ⁱ I
+    ≈ⁱ-refl M = ≈-refl
+
     ≈ⁱ-sym : ∀ {𝕂 𝕄} {γ} {I J : 𝕂 →ⁱ 𝕄 ∥ γ} → I ≈ⁱ J → J ≈ⁱ I
     ≈ⁱ-sym ξ M = ≈-sym (ξ M)
+
+    ≈ⁱ-trans : ∀ {𝕂 𝕄} {γ} {I J K : 𝕂 →ⁱ 𝕄 ∥ γ} → I ≈ⁱ J → J ≈ⁱ K → I ≈ⁱ K
+    ≈ⁱ-trans ζ ξ M = ≈-trans (ζ M) (ξ M)
 
     -- identity instantiation
     𝟙ⁱ : ∀ {𝕄 γ δ} → 𝕄 →ⁱ 𝕄 ∥ γ ⊕ δ
@@ -68,6 +76,11 @@ module Instantiation where
     []ⁱ-resp-≈ⁱ (expr-meta M ts) ξ = []ˢ-resp-≈ˢ-≈ ([,]ˢ-resp-≈ˢ ≈ˢ-refl (λ i → []ⁱ-resp-≈ⁱ (ts i) ξ)) (ξ M)
     []ⁱ-resp-≈ⁱ expr-eqty ξ = ≈-eqty
     []ⁱ-resp-≈ⁱ expr-eqtm ξ = ≈-eqtm
+
+
+    []ⁱ-resp-≈ⁱ-≈ : ∀ {cl} {𝕂 𝕄} {γ} {I J : 𝕂 →ⁱ 𝕄 ∥ γ} {t u : Expr cl 𝕂 γ} →
+                    I ≈ⁱ J → t ≈ u → [ I ]ⁱ t ≈ [ J ]ⁱ u
+    []ⁱ-resp-≈ⁱ-≈ {J = J} {t = t} ζ ξ = ≈-trans ([]ⁱ-resp-≈ⁱ t ζ) ([]ⁱ-resp-≈ J ξ)
 
     -- composition of instantiations
 

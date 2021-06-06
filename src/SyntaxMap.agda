@@ -18,7 +18,7 @@ module SyntaxMap where
   -- syntax map
 
   _→ᵐ_ : SymbolSignature → SymbolSignature → Set
-  𝕊 →ᵐ 𝕋 = ∀ {cl} (S : symb 𝕊 cl) → Expr 𝕋 (obj cl) (symb-arg 𝕊 S)  𝟘
+  𝕊 →ᵐ 𝕋 = ∀ {cl} (S : symb 𝕊 cl) → Expr 𝕋 (obj cl) (symb-arg 𝕊 S) 𝟘
 
   -- equality of syntax maps
 
@@ -51,7 +51,7 @@ module SyntaxMap where
   [_]ᵐ_ : ∀ {𝕊 𝕋} → (𝕊 →ᵐ 𝕋) → ∀ {cl 𝕄 γ} → Expr 𝕊 𝕄 cl γ → Expr 𝕋 𝕄 cl γ
   [ f ]ᵐ (expr-var x) = expr-var x
   [_]ᵐ_ {𝕋 = 𝕋} f {𝕄 = 𝕄} (expr-symb S es) =
-        𝕋 %[ (λ M → [ f ]ᵐ es M) ]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S)
+    𝕋 %[ (λ M → [ f ]ᵐ es M) ]ⁱ (𝕋 %[ 𝟘-initial {𝕊 = 𝕋} ]ʳ f S)
   [ f ]ᵐ (expr-meta M ts) = expr-meta M (λ i → [ f ]ᵐ (ts i))
   [ f ]ᵐ expr-eqty = expr-eqty
   [ f ]ᵐ expr-eqtm = expr-eqtm
@@ -68,7 +68,6 @@ module SyntaxMap where
     open Equality
     open Renaming
     open Substitution
-    open Instantiation
 
     [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → 𝕊 % [ 𝟙ᵐ ]ᵐ t ≈ t
     [𝟙]ᵐ (expr-var x) = ≈-refl
@@ -85,13 +84,68 @@ module SyntaxMap where
     [𝟙]ᵐ expr-eqty = ≈-eqty
     [𝟙]ᵐ expr-eqtm = ≈-eqtm
 
+
+  -- interaction of maps with instantiation and substitution
+  module _ {𝕊 𝕋} where
+    open Substitution
+
+    infixl 7 _ᵐ∘ˢ_
+    _ᵐ∘ˢ_ : ∀ {𝕊 𝕋} {𝕄 γ δ} (f : 𝕊 →ᵐ 𝕋) (σ : 𝕊 % 𝕄 ∥ γ →ˢ δ) → (𝕋 % 𝕄 ∥ γ →ˢ δ)
+    (f ᵐ∘ˢ σ) x = [ f ]ᵐ σ x
+
+    []ᵐ-[]ˢ : ∀ {cl 𝕄 γ δ} {f : 𝕊 →ᵐ 𝕋} {σ : 𝕊 % 𝕄 ∥ γ →ˢ δ} (t : Expr 𝕊 cl 𝕄 γ) →
+              [ f ]ᵐ (𝕊 %[ σ ]ˢ t) ≈ 𝕋 %[ f ᵐ∘ˢ σ ]ˢ [ f ]ᵐ t
+    []ᵐ-[]ˢ (expr-var x) = ≈-refl
+    []ᵐ-[]ˢ {f = f} (expr-symb S es) = {!!}
+    []ᵐ-[]ˢ (expr-meta M ts) = ≈-meta (λ i → []ᵐ-[]ˢ (ts i))
+    []ᵐ-[]ˢ expr-eqty = ≈-eqty
+    []ᵐ-[]ˢ expr-eqtm = ≈-eqtm
+
+    infixl 7 _ᵐ∘ⁱ_
+    _ᵐ∘ⁱ_ : ∀ {𝕊 𝕋} {𝕂 𝕄 γ} (f : 𝕊 →ᵐ 𝕋) (I : 𝕊 % 𝕂 →ⁱ 𝕄 ∥ γ) → 𝕋 % 𝕂 →ⁱ 𝕄 ∥ γ
+    (f ᵐ∘ⁱ I) M =  [ f ]ᵐ I M
+
+    []ᵐ-[]ⁱ : ∀ {cl 𝕂 𝕄 γ} {f : 𝕊 →ᵐ 𝕋} {I : 𝕊 % 𝕂 →ⁱ 𝕄 ∥ γ} (t : Expr 𝕊 cl 𝕂 γ) →
+              [ f ]ᵐ (𝕊 %[ I ]ⁱ t) ≈ 𝕋 %[ f ᵐ∘ⁱ I ]ⁱ [ f ]ᵐ t
+    []ᵐ-[]ⁱ (expr-var x) = ≈-refl
+    []ᵐ-[]ⁱ {f = f} (expr-symb S es) =
+      ≈-trans
+        ([]ⁱ-resp-≈ⁱ
+           (𝕋 %[ 𝟘-initial ]ʳ f S)
+           λ M → ≈-trans ([]ᵐ-[]ⁱ (es M)) ([]ⁱ-resp-≈ⁱ ([ f ]ᵐ es M) {!!}))
+        ([∘]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S))
+    []ᵐ-[]ⁱ {f = f} {I = I} (expr-meta M ts) =
+      ≈-trans
+        ([]ᵐ-[]ˢ (I M))
+        ([]ˢ-resp-≈ˢ (λ { (var-left _) → ≈-refl ; (var-right x) → []ᵐ-[]ⁱ (ts x)}) ([ f ]ᵐ I M))
+    []ᵐ-[]ⁱ expr-eqty = ≈-eqty
+    []ᵐ-[]ⁱ expr-eqtm = ≈-eqtm
+
+    []ᵐ-[]ʳ : ∀ {f : 𝕊 →ᵐ 𝕋} {cl 𝕄 γ δ} {ρ : 𝕊 % γ →ʳ δ} (t : Expr 𝕊 cl 𝕄 γ) →
+              ([ f ]ᵐ ([ ρ ]ʳ t)) ≈ ([ ρ ]ʳ [ f ]ᵐ t)
+    []ᵐ-[]ʳ (expr-var x) = ≈-refl
+    []ᵐ-[]ʳ {f = f} {ρ = ρ} (expr-symb S es) =
+      ≈-trans
+        ([]ⁱ-resp-≈ⁱ ([ 𝟘-initial ]ʳ f S) λ M → []ᵐ-[]ʳ (es M))
+        (≈-trans
+           ([]ⁱ-resp-≈ⁱ-≈
+              {t = [ 𝟘-initial ]ʳ f S}
+              {u = [ ρ ]ʳ (𝕋 %[ 𝟘-initial ]ʳ f S)}
+              (λ {clᴹ} {γᴹ} M → {!!})
+              (≈-trans ([]ʳ-resp-≡ʳ (f S) (λ {()})) ([∘]ʳ (f S))))
+           (≈-sym ([ʳ∘ⁱ]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S))))
+    []ᵐ-[]ʳ (expr-meta M ts) = ≈-meta (λ i → []ᵐ-[]ʳ (ts i))
+    []ᵐ-[]ʳ expr-eqty = ≈-eqty
+    []ᵐ-[]ʳ expr-eqtm = ≈-eqtm
+
   -- Action preserves composition
   module _ {𝕊 𝕋 𝕌} where
-    open Equality
-
-    [∘]ᵐ : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 𝕄 cl γ) → 𝕌 % [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
+    [∘]ᵐ : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → 𝕌 % [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
     [∘]ᵐ (expr-var x) = ≈-refl
-    [∘]ᵐ (expr-symb S es) = {!!}
+    [∘]ᵐ {f = f} {g = g} (expr-symb S es) =
+      ≈-trans
+        ({!!}) -- []ⁱ-resp-≈ⁱ-≈ (λ M → [∘]ᵐ (es M))
+        (≈-sym ([]ᵐ-[]ⁱ (𝕋 %[ 𝟘-initial ]ʳ f S)))
     [∘]ᵐ (expr-meta M ts) = ≈-meta (λ i → [∘]ᵐ (ts i))
     [∘]ᵐ expr-eqty = ≈-eqty
     [∘]ᵐ expr-eqtm = ≈-eqtm

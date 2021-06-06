@@ -86,7 +86,7 @@ module Renaming where
     ≡ʳ-+ʳ ζ ξ (var-right x) = cong var-right (ξ x)
 
     -- the action of a renaming on an expression
-    infix 6 [_]ʳ_
+    infixr 6 [_]ʳ_
 
     open Expression 𝕊
 
