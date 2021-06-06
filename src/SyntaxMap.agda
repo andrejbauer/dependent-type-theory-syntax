@@ -93,20 +93,20 @@ module SyntaxMap where
     open Renaming
     open Substitution
 
-    [𝟙]ᵐ : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ 𝟙ᵐ ]ᵐ t ≈ t
-    [𝟙]ᵐ (expr-var x) = ≈-refl
-    [𝟙]ᵐ (expr-symb S es) =
-      ≈-symb (λ {cⁱ γⁱ} i → [𝟙]ᵐ-arg cⁱ γⁱ i)
-        where [𝟙]ᵐ-arg : ∀ cⁱ γⁱ (i : [ cⁱ , γⁱ ]∈ symb-arg 𝕊 S) → _
-              [𝟙]ᵐ-arg (obj x) γⁱ i =
+    [𝟙ᵐ] : ∀ {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ 𝟙ᵐ ]ᵐ t ≈ t
+    [𝟙ᵐ] (expr-var x) = ≈-refl
+    [𝟙ᵐ] (expr-symb S es) =
+      ≈-symb (λ {cⁱ γⁱ} i → [𝟙ᵐ]-arg cⁱ γⁱ i)
+        where [𝟙ᵐ]-arg : ∀ cⁱ γⁱ (i : [ cⁱ , γⁱ ]∈ symb-arg 𝕊 S) → _
+              [𝟙ᵐ]-arg (obj x) γⁱ i =
                 ≈-trans
-                  ([]ˢ-resp-≈ _ ([]ʳ-resp-≈ _ ([𝟙]ᵐ (es i))))
+                  ([]ˢ-resp-≈ _ ([]ʳ-resp-≈ _ ([𝟙ᵐ] (es i))))
                   (≈-trans (≈-sym ([ˢ∘ʳ] (es i))) ([]ˢ-id (λ { (var-left _) → ≈-refl ; (var-right _) → ≈-refl })))
-              [𝟙]ᵐ-arg EqTy γⁱ i = ≈-eqty
-              [𝟙]ᵐ-arg EqTm γⁱ i = ≈-eqtm
-    [𝟙]ᵐ (expr-meta M ts) = ≈-meta λ i → [𝟙]ᵐ (ts i)
-    [𝟙]ᵐ expr-eqty = ≈-eqty
-    [𝟙]ᵐ expr-eqtm = ≈-eqtm
+              [𝟙ᵐ]-arg EqTy γⁱ i = ≈-eqty
+              [𝟙ᵐ]-arg EqTm γⁱ i = ≈-eqtm
+    [𝟙ᵐ] (expr-meta M ts) = ≈-meta λ i → [𝟙ᵐ] (ts i)
+    [𝟙ᵐ] expr-eqty = ≈-eqty
+    [𝟙ᵐ] expr-eqtm = ≈-eqtm
 
   -- interaction of maps with instantiation and substitution
   module _ {𝕊 𝕋} where
@@ -194,21 +194,21 @@ module SyntaxMap where
   -- Action preserves composition
 
   module _ {𝕊 𝕋 𝕌} where
-    [∘]ᵐ : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
-    [∘]ᵐ (expr-var x) = ≈-refl
-    [∘]ᵐ {f = f} {g = g} (expr-symb S es) =
+    [∘ᵐ] : ∀ {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {cl 𝕄 γ} (t : Expr 𝕊 cl 𝕄 γ) → [ g ∘ᵐ f ]ᵐ t ≈ [ g ]ᵐ [ f ]ᵐ t
+    [∘ᵐ] (expr-var x) = ≈-refl
+    [∘ᵐ] {f = f} {g = g} (expr-symb S es) =
       ≈-trans
-        ([]ⁱ-resp-≈ⁱ-≈ (λ M → [∘]ᵐ (es M)) (≈-sym ([]ᵐ-[]ʳ (f S))))
+        ([]ⁱ-resp-≈ⁱ-≈ (λ M → [∘ᵐ] (es M)) (≈-sym ([]ᵐ-[]ʳ (f S))))
         (≈-sym ([]ᵐ-[]ⁱ ([ 𝟘-initial ]ʳ f S)))
-    [∘]ᵐ (expr-meta M ts) = ≈-meta (λ i → [∘]ᵐ (ts i))
-    [∘]ᵐ expr-eqty = ≈-eqty
-    [∘]ᵐ expr-eqtm = ≈-eqtm
+    [∘ᵐ] (expr-meta M ts) = ≈-meta (λ i → [∘ᵐ] (ts i))
+    [∘ᵐ] expr-eqty = ≈-eqty
+    [∘ᵐ] expr-eqtm = ≈-eqtm
 
   -- Associativity of composition
 
   assocᵐ : ∀ {𝕊 𝕋 𝕌 𝕍} {f : 𝕊 →ᵐ 𝕋} {g : 𝕋 →ᵐ 𝕌} {h : 𝕌 →ᵐ 𝕍} →
            (h ∘ᵐ g) ∘ᵐ f ≈ᵐ h ∘ᵐ (g ∘ᵐ f)
-  assocᵐ {f = f} S = [∘]ᵐ (f S)
+  assocᵐ {f = f} S = [∘ᵐ] (f S)
 
   -- The category of signatures and syntax maps
 
@@ -224,11 +224,11 @@ module SyntaxMap where
        ; _≈_ = _≈ᵐ_
        ; id = 𝟙ᵐ
        ; _∘_ = _∘ᵐ_
-       ; assoc = λ {_} {_} {_} {_} {f} {_} {_} {_} S → [∘]ᵐ (f S)
-       ; sym-assoc = λ {_} {_} {_} {𝕍} {f} {_} {_} {_} S → ≈-sym ([∘]ᵐ (f S))
-       ; identityˡ = λ S → [𝟙]ᵐ _
+       ; assoc = λ {_} {_} {_} {_} {f} {_} {_} {_} S → [∘ᵐ] (f S)
+       ; sym-assoc = λ {_} {_} {_} {𝕍} {f} {_} {_} {_} S → ≈-sym ([∘ᵐ] (f S))
+       ; identityˡ = λ S → [𝟙ᵐ] _
        ; identityʳ = λ {_} {_} {f} {_} → 𝟙ᵐ-right {f = f}
-       ; identity² = λ _ → [𝟙]ᵐ _
+       ; identity² = λ _ → [𝟙ᵐ] _
        ; equiv = record { refl = λ _ → ≈-refl ; sym = ≈ᵐ-sym ; trans = ≈ᵐ-trans }
        ; ∘-resp-≈ = λ ζ ξ S → []ᵐ-resp-≈ᵐ-≈ ζ (ξ S)
        }
