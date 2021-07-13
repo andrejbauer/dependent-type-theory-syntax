@@ -66,6 +66,7 @@ module Syntax where
     ExprObj cl = Expr (obj cl)
 
     ExprTm = ExprObj Tm
+    ExprTy = ExprObj Ty
 
     data Expr where
       expr-var : ∀ {𝕄} {γ} (x : var γ) → ExprTm 𝕄 γ
